@@ -1,66 +1,235 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CBT Ujian - Computer Based Test
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi **Computer Based Test (CBT)** berbasis web untuk pelaksanaan ujian online di lingkungan sekolah. Dibangun menggunakan **Laravel 11**, mendukung multi-role (Admin, Guru, Proktor, Siswa), dilengkapi fitur anti-cheat, randomisasi soal, penilaian otomatis, dan monitoring real-time.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Multi Role**: Admin, Guru, Proktor, Siswa
+- **Manajemen Soal**: Pilihan Ganda, PG Kompleks, Isian Singkat, Essay (mendukung gambar & rumus matematika via CKEditor 5 + MathJax)
+- **Manajemen Ujian**: Buat ujian, atur waktu, KKM, token akses, publish/draft
+- **Randomisasi Soal & Opsi**: Urutan soal dan opsi diacak per-siswa secara deterministik
+- **Anti-Cheat System**: Deteksi tab-switch, fullscreen enforcement, log pelanggaran
+- **Monitoring Real-time**: Proktor & Admin dapat memantau peserta secara live
+- **Penilaian**: Otomatis untuk PG/Isian, manual untuk Essay (admin & guru)
+- **Ruang Ujian**: Manajemen ruang, distribusi siswa, penugasan proktor
+- **Import Data Excel**: Import massal siswa, guru, proktor, kelas, ruang ujian, distribusi ruang
+- **Export Laporan**: Excel, PDF, Berita Acara
+- **Analisis Soal**: Statistik tingkat kesulitan & daya pembeda
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Persyaratan Sistem
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Komponen | Versi Minimum |
+|----------|---------------|
+| PHP | 8.2+ |
+| Composer | 2.x |
+| MySQL / MariaDB | 5.7+ / 10.3+ |
+| Node.js | 18+ (opsional, untuk Vite) |
+| Web Server | Apache / Nginx |
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+> **Rekomendasi**: Gunakan [XAMPP](https://www.apachefriends.org/) (PHP 8.2) untuk kemudahan instalasi di Windows.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Ekstensi PHP yang Diperlukan
 
-## Laravel Sponsors
+- `php-mbstring`
+- `php-xml`
+- `php-zip`
+- `php-gd`
+- `php-mysql`
+- `php-fileinfo`
+- `php-bcmath`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Instalasi
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 1. Clone Repository
 
-## Contributing
+```bash
+git clone https://github.com/username/cbt-ai.git
+cd cbt-ai
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Install Dependensi PHP
 
-## Code of Conduct
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Konfigurasi Environment
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Edit file `.env` sesuai konfigurasi server Anda:
 
-## License
+```dotenv
+APP_NAME="CBT Ujian"
+APP_URL=http://localhost:8080
+APP_TIMEZONE=Asia/Jakarta
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=cbt_ai
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 4. Buat Database
+
+Buat database MySQL dengan nama sesuai konfigurasi `.env`:
+
+```sql
+CREATE DATABASE cbt_ai CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### 5. Jalankan Migrasi & Seeder
+
+```bash
+php artisan migrate --seed
+```
+
+Seeder akan membuat data awal berupa:
+- **Roles & Permissions** (admin, guru, proktor, siswa)
+- **Akun Admin**: `admin` / `admin123`
+- **3 Guru**: `budi.guru` / `guru123`, `siti.guru` / `guru123`, `ahmad.guru` / `guru123`
+- **1 Proktor**: `proktor` / `proktor123`
+- **5 Siswa contoh**: `siswa000001` / `000001` s.d. `siswa000005` / `000005`
+- **5 Jurusan**, **30 Kelas**, dan **9 Mata Pelajaran**
+
+### 6. Buat Symbolic Link Storage
+
+```bash
+php artisan storage:link
+```
+
+### 7. Jalankan Aplikasi
+
+**Menggunakan built-in server Laravel:**
+
+```bash
+php artisan serve --port=8080
+```
+
+**Menggunakan XAMPP:**
+
+Letakkan folder project di `htdocs/cbt-ai`, lalu akses melalui browser:
+
+```
+http://localhost/cbt-ai/public
+```
+
+> **Tips XAMPP**: Agar URL lebih bersih, buat Virtual Host di Apache yang mengarah ke folder `public/`.
+
+---
+
+## Akun Default
+
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `admin123` |
+| Guru | `budi.guru` | `guru123` |
+| Proktor | `proktor` | `proktor123` |
+| Siswa | `siswa000001` | `000001` |
+
+---
+
+## Import Data Massal
+
+Aplikasi mendukung import data dari file Excel (`.xlsx`, `.xls`, `.csv`) melalui menu **Admin > Import Data**:
+
+| Data | Format Kolom |
+|------|-------------|
+| Kelas | Nama Kelas \| Tingkat (X/XI/XII) \| Jurusan \| Tahun Ajaran |
+| Ruang Ujian | Kode \| Nama \| Kapasitas \| Lokasi |
+| Guru | NIP \| Nama \| Username \| Email \| Mapel \| No HP \| Alamat \| Password |
+| Proktor | Nama \| Username \| Kode Ruang \| Password |
+| Siswa | NIS \| NISN \| Nama \| JK \| Kelas \| Jurusan \| No HP \| Alamat |
+| Distribusi Ruang | NIS/Kelas \| Kode Ruang |
+
+Template Excel dapat diunduh langsung dari halaman import.
+
+**Urutan import yang disarankan:**
+1. Kelas → 2. Ruang Ujian → 3. Guru → 4. Proktor → 5. Siswa → 6. Distribusi Ruang
+
+---
+
+## Struktur Role & Hak Akses
+
+### Admin
+- Kelola seluruh master data (jurusan, kelas, mapel, guru, siswa, ruang, proktor)
+- Kelola ujian (CRUD, publish, assign ruang)
+- Monitor ujian real-time
+- Lihat hasil & nilai, penilaian essay
+- Import/export data
+
+### Guru
+- Kelola bank soal (CRUD, import dari Excel)
+- Kelola ujian (CRUD, publish, generate token)
+- Nilai essay
+- Lihat hasil & analisis soal
+- Export laporan (Excel, PDF, Berita Acara)
+
+### Proktor
+- Monitor ujian di ruang yang ditugaskan
+- Buka/reset/selesaikan peserta ujian
+
+### Siswa
+- Ikuti ujian dengan token akses
+- Lihat riwayat & nilai ujian
+
+---
+
+## Teknologi
+
+- **Backend**: Laravel 11, PHP 8.2
+- **Frontend**: Bootstrap 5.3, Bootstrap Icons, Blade Templates
+- **Database**: MySQL / MariaDB
+- **Rich Text Editor**: CKEditor 5
+- **Rumus Matematika**: MathJax 3
+- **Export**: Maatwebsite Excel 3.1, DomPDF
+- **Authorization**: Spatie Laravel Permission 6
+
+---
+
+## Perintah Artisan Berguna
+
+```bash
+# Clear semua cache
+php artisan optimize:clear
+
+# Lihat daftar route
+php artisan route:list
+
+# Reset database (HATI-HATI: menghapus semua data)
+php artisan migrate:fresh --seed
+
+# Maintenance mode
+php artisan down
+php artisan up
+```
+
+---
+
+## Troubleshooting
+
+| Masalah | Solusi |
+|---------|--------|
+| Error 500 setelah clone | Pastikan `composer install` dan `php artisan key:generate` sudah dijalankan |
+| Halaman blank / error class not found | Jalankan `composer dump-autoload` |
+| Gambar tidak muncul | Jalankan `php artisan storage:link` |
+| Error permission denied (Linux) | `chmod -R 775 storage bootstrap/cache` |
+| Session / cache error | `php artisan optimize:clear` |
+| Import Excel gagal | Pastikan ekstensi `php-zip` dan `php-gd` aktif |
+
+---
+
+## Lisensi
+
+Aplikasi ini menggunakan framework [Laravel](https://laravel.com) yang dilisensikan di bawah [MIT License](https://opensource.org/licenses/MIT).
