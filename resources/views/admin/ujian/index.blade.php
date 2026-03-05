@@ -69,18 +69,31 @@
                         </td>
                         <td>
                             <div class="d-flex gap-1 flex-wrap">
-                                @if($u->status == 'draft')
+                                {{-- Edit: tersedia untuk draft & selesai --}}
+                                @if(in_array($u->status, ['draft', 'selesai']))
                                     <a href="{{ route('admin.ujian.edit', $u) }}" class="btn btn-warning btn-sm" title="Edit"><i class="bi bi-pencil"></i></a>
+                                @endif
+
+                                {{-- Pilih Soal: tersedia untuk draft & selesai --}}
+                                @if(in_array($u->status, ['draft', 'selesai']))
                                     <a href="{{ route('admin.ujian.soal', $u) }}" class="btn btn-outline-primary btn-sm" title="Pilih Soal"><i class="bi bi-list-check"></i></a>
+                                @endif
+
+                                {{-- Publish: hanya draft --}}
+                                @if($u->status == 'draft')
                                     <form action="{{ route('admin.ujian.publish', $u) }}" method="POST" class="d-inline" onsubmit="return confirm('Publish ujian ini?')">
                                         @csrf
                                         <button class="btn btn-success btn-sm" title="Publish"><i class="bi bi-send"></i></button>
                                     </form>
                                 @endif
+
+                                {{-- Generate Token --}}
                                 <form action="{{ route('admin.ujian.generateToken', $u) }}" method="POST" class="d-inline">
                                     @csrf
                                     <button class="btn btn-info btn-sm" title="Generate Token Baru"><i class="bi bi-key"></i></button>
                                 </form>
+
+                                {{-- Mulai / Selesaikan --}}
                                 @if(in_array($u->status, ['publish', 'berlangsung']))
                                     <form action="{{ route('admin.ujian.updateStatus', $u) }}" method="POST" class="d-inline">
                                         @csrf @method('PATCH')
@@ -93,8 +106,19 @@
                                         @endif
                                     </form>
                                 @endif
-                                @if($u->status == 'draft')
-                                    <form action="{{ route('admin.ujian.destroy', $u) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus ujian ini?')">
+
+                                {{-- Aktifkan Kembali: selesai → publish --}}
+                                @if($u->status == 'selesai')
+                                    <form action="{{ route('admin.ujian.updateStatus', $u) }}" method="POST" class="d-inline" onsubmit="return confirm('Aktifkan kembali ujian ini? Status akan berubah ke Publish.')">
+                                        @csrf @method('PATCH')
+                                        <input type="hidden" name="status" value="publish">
+                                        <button class="btn btn-outline-success btn-sm" title="Aktifkan Kembali"><i class="bi bi-arrow-counterclockwise"></i></button>
+                                    </form>
+                                @endif
+
+                                {{-- Hapus: tersedia untuk draft & selesai --}}
+                                @if(in_array($u->status, ['draft', 'selesai']))
+                                    <form action="{{ route('admin.ujian.destroy', $u) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus ujian ini? Semua data peserta dan hasil akan ikut terhapus.')">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-danger btn-sm" title="Hapus"><i class="bi bi-trash"></i></button>
                                     </form>
