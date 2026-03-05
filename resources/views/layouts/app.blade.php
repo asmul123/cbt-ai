@@ -75,15 +75,37 @@
             font-size: 1.3rem;
         }
         .table th { font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #64748b; }
+        .user-name-display {
+            display: inline-block;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        @media (max-width: 768px) {
+            .user-name-display { max-width: 8ch; }
+        }
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
             .main-content { margin-left: 0; }
         }
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 999;
+        }
+        .sidebar-backdrop.show { display: block; }
     </style>
     @stack('styles')
 </head>
 <body>
+    <!-- Sidebar Backdrop (mobile) -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
@@ -175,14 +197,15 @@
         <!-- Topbar -->
         <div class="topbar">
             <div>
-                <button class="btn btn-sm btn-outline-secondary d-md-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                <button class="btn btn-sm btn-outline-secondary d-md-none" onclick="toggleSidebar()">
                     <i class="bi bi-list"></i>
                 </button>
                 <span class="fw-semibold">@yield('title', 'Dashboard')</span>
             </div>
             <div class="dropdown">
                 <a class="btn btn-sm btn-light dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
+                    <i class="bi bi-person-circle"></i>
+                    <span class="user-name-display">{{ Auth::user()->name }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-gear"></i> Profil</a></li>
@@ -227,6 +250,19 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            sidebar.classList.toggle('show');
+            backdrop.classList.toggle('show');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('show');
+            document.getElementById('sidebarBackdrop').classList.remove('show');
+        }
+    </script>
 
     <!-- MathJax 3 for equation rendering -->
     <script>
