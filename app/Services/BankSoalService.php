@@ -75,27 +75,44 @@ class BankSoalService
                     'guru_id' => $guruId,
                     'tipe_soal' => $this->mapTipeSoal($row[1] ?? 'pg'),
                     'soal' => $row[0],
-                    'tingkat_kesulitan' => $this->mapTingkat($row[7] ?? 'sedang'),
-                    'kompetensi_dasar' => $row[8] ?? null,
-                    'bobot' => floatval($row[9] ?? 1),
-                    'status' => 'draft',
+                    'tingkat_kesulitan' => $this->mapTingkat($row[8] ?? 'sedang'),
+                    'kompetensi_dasar' => $row[9] ?? null,
+                    'bobot' => floatval($row[10] ?? 1),
+                    'status' => 'aktif',
                 ];
 
                 $opsiData = [];
-                $labels = ['A', 'B', 'C', 'D', 'E'];
-                $jawabanBenar = strtoupper(trim($row[6] ?? 'A'));
+                $tipeSoal = $soalData['tipe_soal'];
 
-                for ($i = 0; $i < 5; $i++) {
-                    $teks = $row[$i + 2] ?? null;
-                    if ($teks) {
+                if (in_array($tipeSoal, ['pg', 'pg_kompleks'])) {
+                    // Pilihan ganda: import opsi A-E dari kolom 2-6
+                    $labels = ['A', 'B', 'C', 'D', 'E'];
+                    $jawabanBenar = strtoupper(trim($row[7] ?? 'A'));
+
+                    for ($i = 0; $i < 5; $i++) {
+                        $teks = $row[$i + 2] ?? null;
+                        if ($teks) {
+                            $opsiData[] = [
+                                'label' => $labels[$i],
+                                'teks' => $teks,
+                                'is_benar' => str_contains($jawabanBenar, $labels[$i]),
+                                'urutan' => $i,
+                            ];
+                        }
+                    }
+                } elseif ($tipeSoal === 'isian') {
+                    // Isian singkat: ambil jawaban benar dari kolom 7 (atau kolom 2 sebagai fallback)
+                    $jawaban = trim($row[7] ?? $row[2] ?? '');
+                    if ($jawaban) {
                         $opsiData[] = [
-                            'label' => $labels[$i],
-                            'teks' => $teks,
-                            'is_benar' => str_contains($jawabanBenar, $labels[$i]),
-                            'urutan' => $i,
+                            'label' => 'A',
+                            'teks' => $jawaban,
+                            'is_benar' => true,
+                            'urutan' => 0,
                         ];
                     }
                 }
+                // Essay: tidak perlu opsi jawaban
 
                 $this->buatSoal($soalData, $opsiData);
                 $success++;
