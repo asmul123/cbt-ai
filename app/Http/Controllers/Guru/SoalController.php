@@ -232,4 +232,46 @@ class SoalController extends Controller
             'url' => asset('storage/' . $path),
         ]);
     }
+
+    /**
+     * Hapus gambar soal (field gambar pada tabel soal)
+     */
+    public function hapusGambarSoal(Soal $soal)
+    {
+        if ($soal->gambar) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($soal->gambar);
+            $soal->update(['gambar' => null]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Gambar soal berhasil dihapus']);
+    }
+
+    /**
+     * Hapus gambar yang diupload dari CKEditor
+     */
+    public function hapusGambar(Request $request)
+    {
+        $request->validate([
+            'url' => 'required|string',
+        ]);
+
+        $url = $request->input('url');
+
+        // Extract relative path from full URL
+        // URL format: http://domain/storage/soal-images/filename.ext
+        $storageUrl = asset('storage/');
+        if (str_starts_with($url, $storageUrl)) {
+            $relativePath = str_replace($storageUrl, '', $url);
+            $relativePath = ltrim($relativePath, '/');
+
+            // Security: only allow deletion inside soal-images directory
+            if (str_starts_with($relativePath, 'soal-images/') && !str_contains($relativePath, '..')) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($relativePath);
+
+                return response()->json(['success' => true, 'message' => 'Gambar berhasil dihapus']);
+            }
+        }
+
+        return response()->json(['success' => false, 'message' => 'Gambar tidak ditemukan'], 404);
+    }
 }

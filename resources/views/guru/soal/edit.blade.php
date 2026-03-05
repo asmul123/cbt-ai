@@ -110,9 +110,14 @@
                 <div class="card-body">
                     <label class="form-label"><i class="bi bi-image"></i> Gambar Soal (opsional)</label>
                     @if($soal->gambar)
-                        <div class="mb-2">
+                        <div class="mb-2" id="gambarSoalPreview">
                             <img src="{{ asset('storage/' . $soal->gambar) }}" class="img-fluid rounded" style="max-height: 200px">
-                            <small class="d-block text-muted mt-1">Upload baru untuk mengganti gambar.</small>
+                            <div class="mt-2 d-flex gap-2 align-items-center">
+                                <button type="button" class="btn btn-sm btn-outline-danger" id="btnHapusGambarSoal" onclick="hapusGambarSoal()">
+                                    <i class="bi bi-trash"></i> Hapus Gambar
+                                </button>
+                                <small class="text-muted">atau upload baru untuk mengganti.</small>
+                            </div>
                         </div>
                     @endif
                     <input type="file" name="gambar" class="form-control @error('gambar') is-invalid @enderror" accept="image/*">
@@ -235,5 +240,37 @@
     bindCheckboxBehavior();
     updateRemoveButtons();
     toggleOpsi();
+
+    // Hapus gambar soal (opsional)
+    function hapusGambarSoal() {
+        if (!confirm('Yakin ingin menghapus gambar soal ini?')) return;
+
+        const btn = document.getElementById('btnHapusGambarSoal');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Menghapus...';
+
+        fetch('{{ route("guru.soal.hapusGambarSoal", $soal->id) }}', {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('gambarSoalPreview').remove();
+            } else {
+                alert('Gagal menghapus gambar.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-trash"></i> Hapus Gambar';
+            }
+        })
+        .catch(() => {
+            alert('Terjadi kesalahan saat menghapus gambar.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-trash"></i> Hapus Gambar';
+        });
+    }
 </script>
 @endpush

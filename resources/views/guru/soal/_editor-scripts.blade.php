@@ -77,6 +77,69 @@ const CK_MINI_CONFIG = {
 // Store editor instances
 const editorInstances = {};
 
+// URL endpoint untuk hapus gambar
+const DELETE_IMAGE_URL = '{{ route("guru.soal.hapusGambar") }}';
+const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').content;
+
+/**
+ * Hapus gambar dari server via AJAX
+ */
+function deleteImageFromServer(imageUrl) {
+    if (!imageUrl || !imageUrl.includes('/storage/soal-images/')) return;
+
+    fetch(DELETE_IMAGE_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': CSRF_TOKEN,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ url: imageUrl })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) console.log('Gambar dihapus:', imageUrl);
+    })
+    .catch(err => console.warn('Gagal hapus gambar:', err));
+}
+
+/**
+ * Track images in editor and auto-delete when removed
+ */
+function trackEditorImages(editor) {
+    let previousImages = new Set();
+
+    // Collect all image URLs currently in the editor
+    function getImageUrls() {
+        const urls = new Set();
+        const root = editor.model.document.getRoot();
+        for (const item of editor.model.createRangeIn(root).getItems()) {
+            if (item.is('element', 'imageBlock') || item.is('element', 'imageInline')) {
+                const src = item.getAttribute('src');
+                if (src) urls.add(src);
+            }
+        }
+        return urls;
+    }
+
+    // Set initial state
+    previousImages = getImageUrls();
+
+    // Listen for content changes
+    editor.model.document.on('change:data', () => {
+        const currentImages = getImageUrls();
+
+        // Find removed images
+        for (const url of previousImages) {
+            if (!currentImages.has(url)) {
+                deleteImageFromServer(url);
+            }
+        }
+
+        previousImages = currentImages;
+    });
+}
+
 // ========================================
 //  Initialize CKEditor for a textarea element
 // ========================================
@@ -88,6 +151,10 @@ function initCKEditor(element, config, key) {
     return CKEDITOR.ClassicEditor.create(element, config)
         .then(editor => {
             editorInstances[key] = editor;
+
+            // Track images for auto-deletion
+            trackEditorImages(editor);
+
             // Sync editor content to original textarea/input on change
             editor.model.document.on('change:data', () => {
                 const hidden = document.getElementById(key + '_hidden');

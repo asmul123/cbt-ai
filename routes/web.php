@@ -97,6 +97,8 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
 
     // Bank Soal
     Route::post('soal/upload-gambar', [Guru\SoalController::class, 'uploadGambar'])->name('soal.uploadGambar');
+    Route::post('soal/hapus-gambar', [Guru\SoalController::class, 'hapusGambar'])->name('soal.hapusGambar');
+    Route::delete('soal/{soal}/hapus-gambar-soal', [Guru\SoalController::class, 'hapusGambarSoal'])->name('soal.hapusGambarSoal');
     Route::resource('soal', Guru\SoalController::class);
     Route::post('soal/{soal}/duplicate', [Guru\SoalController::class, 'duplicate'])->name('soal.duplicate');
     Route::get('soal-import', [Guru\SoalController::class, 'import'])->name('soal.import');
