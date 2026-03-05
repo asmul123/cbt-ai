@@ -187,7 +187,9 @@ class UjianService
                 'status_kelulusan' => $statusKelulusan,
                 'waktu_mulai' => $peserta->waktu_mulai,
                 'waktu_selesai' => $peserta->waktu_selesai,
-                'durasi_pengerjaan' => $peserta->waktu_mulai ? now()->diffInSeconds($peserta->waktu_mulai) : null,
+                'durasi_pengerjaan' => $peserta->waktu_mulai
+                    ? (int) abs(($peserta->waktu_selesai ?? now())->diffInSeconds($peserta->waktu_mulai))
+                    : null,
             ]
         );
     }
