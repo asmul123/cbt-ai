@@ -1,5 +1,5 @@
-{{-- CKEditor 5 CDN --}}
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+{{-- CKEditor 5 Super Build CDN (includes all open-source plugins) --}}
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/super-build/ckeditor.js"></script>
 
 <script>
 // ========================================
@@ -40,6 +40,17 @@ const CK_CONFIG = {
         ]
     },
     fontSize: { options: [10, 12, 14, 'default', 18, 20, 24, 30] },
+    alignment: { options: ['left', 'center', 'right', 'justify'] },
+    removePlugins: [
+        'ExportPdf', 'ExportWord', 'ImportWord', 'AIAssistant',
+        'CKBox', 'CKFinder', 'EasyImage', 'MultiLevelList',
+        'RealTimeCollaborativeComments', 'RealTimeCollaborativeTrackChanges',
+        'RealTimeCollaborativeRevisionHistory', 'PresenceList',
+        'Comments', 'TrackChanges', 'TrackChangesData', 'RevisionHistory',
+        'Pagination', 'WProofreader', 'MathType', 'SlashCommand',
+        'Template', 'DocumentOutline', 'FormatPainter', 'TableOfContents',
+        'PasteFromOfficeEnhanced', 'CaseChange'
+    ],
     language: 'id',
     placeholder: 'Ketik di sini...'
 };
@@ -50,6 +61,16 @@ const CK_MINI_CONFIG = {
         uploadUrl: '{{ route("guru.soal.uploadGambar") }}',
         headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
     },
+    removePlugins: [
+        'ExportPdf', 'ExportWord', 'ImportWord', 'AIAssistant',
+        'CKBox', 'CKFinder', 'EasyImage', 'MultiLevelList',
+        'RealTimeCollaborativeComments', 'RealTimeCollaborativeTrackChanges',
+        'RealTimeCollaborativeRevisionHistory', 'PresenceList',
+        'Comments', 'TrackChanges', 'TrackChangesData', 'RevisionHistory',
+        'Pagination', 'WProofreader', 'MathType', 'SlashCommand',
+        'Template', 'DocumentOutline', 'FormatPainter', 'TableOfContents',
+        'PasteFromOfficeEnhanced', 'CaseChange'
+    ],
     placeholder: 'Ketik opsi jawaban...'
 };
 
@@ -64,7 +85,7 @@ function initCKEditor(element, config, key) {
         editorInstances[key].destroy().catch(() => {});
         delete editorInstances[key];
     }
-    return ClassicEditor.create(element, config)
+    return CKEDITOR.ClassicEditor.create(element, config)
         .then(editor => {
             editorInstances[key] = editor;
             // Sync editor content to original textarea/input on change
@@ -322,7 +343,7 @@ function syncAllEditors() {
 }
 
 // Initialize all editors when DOM is ready
-if (typeof ClassicEditor !== 'undefined') {
+if (typeof CKEDITOR !== 'undefined' && CKEDITOR.ClassicEditor) {
     initAllEditors();
     console.log('CKEditor 5 initialized successfully');
 } else {
