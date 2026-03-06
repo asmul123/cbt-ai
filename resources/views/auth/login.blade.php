@@ -192,7 +192,7 @@
         <div class="login-card">
             <div class="login-header">
                 <div class="icon-wrap">
-                    <i class="bi bi-mortarboard-fill"></i>
+                    <img src="{{ asset('smk1logo.png') }}" alt="Logo SMK" style="width:54px;height:54px;object-fit:contain;">
                 </div>
                 <h4>CBT Ujian Sekolah</h4>
                 <small>Computer Based Testing System</small>

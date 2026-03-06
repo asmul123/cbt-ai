@@ -114,7 +114,7 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <i class="bi bi-mortarboard-fill"></i> CBT UJIAN
+            <img src="{{ asset('smk1logo.png') }}" alt="Logo SMK" style="height:32px;width:32px;object-fit:contain;margin-right:8px;"> CBT UJIAN
         </div>
         <nav class="nav flex-column mt-3">
             @role('admin')
