@@ -255,6 +255,12 @@
                     </button>
                 </form>
 
+                <div class="text-center mt-3">
+                    <a href="{{ route('proktor.quick-login') }}" style="color:#2c5282;font-size:0.88rem;text-decoration:none;font-weight:500;">
+                        <i class="bi bi-display me-1"></i> Quick Login Proktor
+                    </a>
+                </div>
+
                 <div class="footer-text">&copy; {{ date('Y') }} CBT Ujian Sekolah &mdash; SMK</div>
             </div>
         </div>

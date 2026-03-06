@@ -89,7 +89,16 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('hasil/{ujian}/siswa/{siswa}', [Admin\HasilController::class, 'detail'])->name('hasil.detail');
     Route::get('hasil/{ujian}/essay', [Admin\HasilController::class, 'nilaiEssay'])->name('hasil.essay');
     Route::post('hasil/essay/{jawaban}', [Admin\HasilController::class, 'simpanNilaiEssay'])->name('hasil.simpanEssay');
+
+    // Quick Login Proktor
+    Route::get('quick-login', [Admin\QuickLoginController::class, 'index'])->name('quick-login.index');
+    Route::post('quick-login/{user}', [Admin\QuickLoginController::class, 'loginAs'])->name('quick-login.loginAs');
 });
+
+// Kembali dari impersonate proktor ke admin (tanpa middleware role)
+Route::post('admin/quick-login/kembali', [Admin\QuickLoginController::class, 'kembali'])
+    ->middleware('auth')
+    ->name('admin.quick-login.kembali');
 
 // ==================== GURU ROUTES ====================
 Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(function () {

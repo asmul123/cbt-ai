@@ -154,6 +154,9 @@
                 <a class="nav-link {{ request()->routeIs('admin.monitor.*') ? 'active' : '' }}" href="{{ route('admin.monitor.index') }}">
                     <i class="bi bi-display"></i> Monitor Ujian
                 </a>
+                <a class="nav-link {{ request()->routeIs('admin.quick-login.*') ? 'active' : '' }}" href="{{ route('admin.quick-login.index') }}">
+                    <i class="bi bi-box-arrow-in-right"></i> Quick Login Proktor
+                </a>
             @endrole
 
             @role('guru')
@@ -203,10 +206,21 @@
         </nav>
     </div>
 
+    <!-- Impersonate Banner -->
+    @if(session()->has('admin_impersonate_id'))
+    <div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc3545;color:white;padding:6px 20px;display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;">
+        <span><i class="bi bi-exclamation-triangle-fill me-1"></i> Anda sedang login sebagai <strong>{{ Auth::user()->name }}</strong> (Proktor)</span>
+        <form action="{{ route('admin.quick-login.kembali') }}" method="POST" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-light fw-semibold"><i class="bi bi-arrow-return-left me-1"></i> Kembali ke Admin</button>
+        </form>
+    </div>
+    @endif
+
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" @if(session()->has('admin_impersonate_id')) style="padding-top:115px;" @endif>
         <!-- Topbar -->
-        <div class="topbar">
+        <div class="topbar" @if(session()->has('admin_impersonate_id')) style="top:38px;" @endif>
             <div>
                 <button class="btn btn-sm btn-outline-secondary d-md-none" onclick="toggleSidebar()">
                     <i class="bi bi-list"></i>
