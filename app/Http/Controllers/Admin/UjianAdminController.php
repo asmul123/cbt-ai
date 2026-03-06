@@ -26,8 +26,8 @@ class UjianAdminController extends Controller
 
     public function create(Request $request)
     {
-        $mapel = Mapel::where('is_active', true)->get();
-        $kelas = Kelas::with('jurusan')->where('is_active', true)->get();
+        $mapel = cached_mapel_aktif();
+        $kelas = cached_kelas_aktif();
         $ruang = RuangUjian::where('is_active', true)->withCount('siswa')->get();
         $guru = Guru::with('user')->get();
 
@@ -89,8 +89,8 @@ class UjianAdminController extends Controller
 
     public function edit(Ujian $ujian)
     {
-        $mapel = Mapel::where('is_active', true)->get();
-        $kelas = Kelas::with('jurusan')->where('is_active', true)->get();
+        $mapel = cached_mapel_aktif();
+        $kelas = cached_kelas_aktif();
         $ruang = RuangUjian::where('is_active', true)->withCount('siswa')->get();
         $guru = Guru::with('user')->get();
         $ujian->load('kelas', 'ruang');

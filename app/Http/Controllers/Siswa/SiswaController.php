@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\SaveJawabanJob;
 use App\Models\Ujian;
 use App\Models\PesertaUjian;
 use App\Models\HasilUjian;
@@ -49,6 +48,7 @@ class SiswaController extends Controller
         $ujian = Ujian::whereIn('status', ['publish', 'berlangsung'])
             ->whereHas('kelas', fn($q) => $q->where('kelas.id', $siswa->kelas_id))
             ->with('mapel')
+            ->withCount('soal')
             ->get();
 
         // Mark which ones are already taken
@@ -87,6 +87,7 @@ class SiswaController extends Controller
     {
         $siswa = auth()->user()->siswa;
         $ujian->load('mapel');
+        $ujian->loadCount('soal');
 
         // Check if already started
         $peserta = PesertaUjian::where('ujian_id', $ujian->id)
@@ -149,25 +150,26 @@ class SiswaController extends Controller
             return redirect()->route('siswa.dashboard')->with('error', 'Soal tidak ditemukan.');
         }
 
-        $soal = \App\Models\Soal::with('opsi')->findOrFail($soalId);
+        // Cache semua soal + opsi per peserta (TTL = durasi ujian + 1 jam buffer)
+        $cacheKey = "soal_ujian:{$peserta->id}";
+        $ttl = now()->addMinutes(($ujian->durasi ?? 90) + 60);
+        $semuaSoal = Cache::remember($cacheKey, $ttl, function () use ($soalOrder) {
+            return \App\Models\Soal::with('opsi')
+                ->whereIn('id', $soalOrder)
+                ->get()
+                ->keyBy('id');
+        });
 
-        // Get answered status for navigation - merge DB + Redis cache
+        $soal = $semuaSoal[$soalId] ?? \App\Models\Soal::with('opsi')->findOrFail($soalId);
+
+        // Get answered status for navigation (harus fresh dari DB)
         $jawabanStatus = $peserta->jawabanSiswa()
             ->select('soal_id', 'jawaban', 'ragu_ragu')
             ->get()
             ->keyBy('soal_id');
 
-        // Merge dengan Redis cache (jawaban pending dari queue belum masuk DB)
-        foreach ($soalOrder as $sId) {
-            $cached = Cache::get("jawaban_cache:{$peserta->id}:{$sId}");
-            if ($cached) {
-                $jawabanStatus[$sId] = (object) $cached;
-            }
-        }
-
-        // Get current answer - cek Redis cache dulu, baru DB
-        $cachedJawaban = Cache::get("jawaban_cache:{$peserta->id}:{$soalId}");
-        $jawaban = $cachedJawaban ? (object) $cachedJawaban : $peserta->jawabanSiswa()->where('soal_id', $soalId)->first();
+        // Get current answer (fresh dari DB)
+        $jawaban = $jawabanStatus[$soalId] ?? null;
 
         // Acak opsi if enabled (deterministic per peserta+soal so order stays consistent)
         $opsiList = $soal->opsi;
@@ -199,13 +201,6 @@ class SiswaController extends Controller
         }
 
         $this->ujianService->simpanJawaban($peserta, $soalId, $jawabanValue, $request->boolean('ragu_ragu'));
-
-        // Simpan ke Redis cache untuk instant read di halaman berikutnya
-        Cache::put(
-            "jawaban_cache:{$peserta->id}:{$soalId}",
-            ['soal_id' => $soalId, 'jawaban' => $jawabanValue, 'ragu_ragu' => $request->boolean('ragu_ragu')],
-            now()->addHours(3)
-        );
 
         // Handle navigation
         if ($request->action === 'submit') {
@@ -246,6 +241,9 @@ class SiswaController extends Controller
             ->firstOrFail();
 
         $this->ujianService->submitUjian($peserta);
+
+        // Hapus cache soal karena ujian sudah selesai
+        Cache::forget("soal_ujian:{$peserta->id}");
 
         return redirect()->route('siswa.ujian.selesai', $ujian)->with('success', 'Ujian berhasil disubmit!');
     }

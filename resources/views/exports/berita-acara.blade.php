@@ -28,7 +28,7 @@
         <tr><td>3. Guru Pengampu</td><td>: {{ $ujian->guru->user->name ?? '-' }}</td></tr>
         <tr><td>4. Tanggal Pelaksanaan</td><td>: {{ $ujian->tanggal_mulai ? \Carbon\Carbon::parse($ujian->tanggal_mulai)->format('d F Y') : '-' }}</td></tr>
         <tr><td>5. Durasi</td><td>: {{ $ujian->durasi }} menit</td></tr>
-        <tr><td>6. Jumlah Soal</td><td>: {{ $ujian->soal->count() }} butir</td></tr>
+        <tr><td>6. Jumlah Soal</td><td>: {{ $ujian->soal_count }} butir</td></tr>
     </table>
 
     <p><strong>Rekapitulasi Peserta:</strong></p>

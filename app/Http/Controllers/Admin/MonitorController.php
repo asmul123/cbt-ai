@@ -38,6 +38,8 @@ class MonitorController extends Controller
         $ruangList = RuangUjian::where('is_active', true)->get();
         $currentRuang = $ruangFilter ? RuangUjian::find($ruangFilter) : null;
 
+        $ujian->loadCount('soal');
+
         $query = PesertaUjian::where('ujian_id', $ujian->id)
             ->with(['siswa.kelas', 'siswa.user', 'jawabanSiswa', 'ruangUjian']);
 

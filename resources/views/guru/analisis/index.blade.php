@@ -24,8 +24,8 @@
                         <td>{{ $i + 1 }}</td>
                         <td class="fw-semibold">{{ $u->nama }}</td>
                         <td>{{ $u->mapel->nama ?? '-' }}</td>
-                        <td><span class="badge bg-primary">{{ $u->soal->count() }}</span></td>
-                        <td><span class="badge bg-info">{{ $u->peserta->count() }}</span></td>
+                        <td><span class="badge bg-primary">{{ $u->soal_count }}</span></td>
+                        <td><span class="badge bg-info">{{ $u->peserta_count }}</span></td>
                         <td>
                             <a href="{{ route('guru.analisis.show', $u) }}" class="btn btn-primary btn-sm"><i class="bi bi-graph-up"></i> Analisis</a>
                         </td>

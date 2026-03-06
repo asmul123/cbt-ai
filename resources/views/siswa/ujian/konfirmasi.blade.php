@@ -14,7 +14,7 @@
                         <tr><td class="text-muted" width="150">Nama Ujian</td><td class="fw-bold">{{ $ujian->nama }}</td></tr>
                         <tr><td class="text-muted">Mata Pelajaran</td><td>{{ $ujian->mapel->nama ?? '-' }}</td></tr>
                         <tr><td class="text-muted">Durasi</td><td>{{ $ujian->durasi }} menit</td></tr>
-                        <tr><td class="text-muted">Jumlah Soal</td><td>{{ $ujian->soal->count() }} soal</td></tr>
+                        <tr><td class="text-muted">Jumlah Soal</td><td>{{ $ujian->soal_count }} soal</td></tr>
                         <tr><td class="text-muted">Nama Peserta</td><td>{{ $siswa->user->name ?? '-' }}</td></tr>
                         <tr><td class="text-muted">NIS</td><td>{{ $siswa->nis }}</td></tr>
                         <tr><td class="text-muted">Kelas</td><td>{{ $siswa->kelas->nama ?? '-' }}</td></tr>

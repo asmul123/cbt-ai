@@ -31,16 +31,16 @@ class SiswaController extends Controller
         }
 
         $siswa = $query->paginate(25);
-        $kelas = Kelas::all();
-        $jurusan = Jurusan::all();
+        $kelas = cached_kelas_all();
+        $jurusan = cached_jurusan_all();
 
         return view('admin.siswa.index', compact('siswa', 'kelas', 'jurusan'));
     }
 
     public function create()
     {
-        $kelas = Kelas::with('jurusan')->where('is_active', true)->get();
-        $jurusan = Jurusan::where('is_active', true)->get();
+        $kelas = cached_kelas_aktif();
+        $jurusan = cached_jurusan_aktif();
         return view('admin.siswa.create', compact('kelas', 'jurusan'));
     }
 
@@ -82,8 +82,8 @@ class SiswaController extends Controller
 
     public function edit(Siswa $siswa)
     {
-        $kelas = Kelas::with('jurusan')->where('is_active', true)->get();
-        $jurusan = Jurusan::where('is_active', true)->get();
+        $kelas = cached_kelas_aktif();
+        $jurusan = cached_jurusan_aktif();
         return view('admin.siswa.edit', compact('siswa', 'kelas', 'jurusan'));
     }
 

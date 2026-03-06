@@ -17,7 +17,7 @@ class KelasController extends Controller
 
     public function create()
     {
-        $jurusan = Jurusan::where('is_active', true)->get();
+        $jurusan = cached_jurusan_aktif();
         return view('admin.kelas.create', compact('jurusan'));
     }
 
@@ -31,12 +31,13 @@ class KelasController extends Controller
         ]);
 
         Kelas::create($request->all());
+        forget_master_cache();
         return redirect()->route('admin.kelas.index')->with('success', 'Kelas berhasil ditambahkan.');
     }
 
     public function edit(Kelas $kela)
     {
-        $jurusan = Jurusan::where('is_active', true)->get();
+        $jurusan = cached_jurusan_aktif();
         return view('admin.kelas.edit', ['kelas' => $kela, 'jurusan' => $jurusan]);
     }
 
@@ -50,12 +51,14 @@ class KelasController extends Controller
         ]);
 
         $kela->update($request->all());
+        forget_master_cache();
         return redirect()->route('admin.kelas.index')->with('success', 'Kelas berhasil diperbarui.');
     }
 
     public function destroy(Kelas $kela)
     {
         $kela->delete();
+        forget_master_cache();
         return redirect()->route('admin.kelas.index')->with('success', 'Kelas berhasil dihapus.');
     }
 }

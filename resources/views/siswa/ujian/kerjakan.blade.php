@@ -263,6 +263,7 @@
         // ========== ANTI-CHEAT ==========
         let violations = {{ $peserta->jumlah_pelanggaran ?? 0 }};
         let isNavigating = false;
+        let dismissCooldown = false; // mencegah violation langsung setelah dismiss
         const maxViolations = 5;
         const warningEl = document.getElementById('cheatWarning');
         const violationEl = document.getElementById('violationCount');
@@ -298,6 +299,7 @@
         }
 
         function handleViolation(tipe, detail) {
+            if (isNavigating || dismissCooldown) return; // abaikan saat navigasi atau cooldown dismiss
             violations++;
             violationEl.textContent = violations;
             warningEl.style.display = 'flex';
@@ -342,6 +344,9 @@
 
         function dismissWarning() {
             warningEl.style.display = 'none';
+            // Cooldown 1.5 detik agar event blur/focus setelah klik tombol tidak langsung menjadi violation baru
+            dismissCooldown = true;
+            setTimeout(() => { dismissCooldown = false; }, 1500);
         }
 
         // Disable right-click

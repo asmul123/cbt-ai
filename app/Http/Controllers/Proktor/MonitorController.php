@@ -54,6 +54,8 @@ class MonitorController extends Controller
         $ruangId = auth()->user()->ruang_ujian_id;
         $ruang = auth()->user()->ruangUjian;
 
+        $ujian->loadCount('soal');
+
         $query = PesertaUjian::where('ujian_id', $ujian->id)
             ->with(['siswa.kelas', 'siswa.user', 'jawabanSiswa', 'ruangUjian']);
 
