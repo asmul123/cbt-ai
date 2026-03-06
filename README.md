@@ -22,13 +22,13 @@ Aplikasi **Computer Based Test (CBT)** berbasis web untuk pelaksanaan ujian onli
 
 ## Persyaratan Sistem
 
-| Komponen | Versi Minimum |
-|----------|---------------|
-| PHP | 8.2+ |
-| Composer | 2.x |
-| MySQL / MariaDB | 5.7+ / 10.3+ |
-| Node.js | 18+ (opsional, untuk Vite) |
-| Web Server | Apache / Nginx |
+| Komponen        | Versi Minimum              |
+| --------------- | -------------------------- |
+| PHP             | 8.2+                       |
+| Composer        | 2.x                        |
+| MySQL / MariaDB | 5.7+ / 10.3+               |
+| Node.js         | 18+ (opsional, untuk Vite) |
+| Web Server      | Apache / Nginx             |
 
 > **Rekomendasi**: Gunakan [XAMPP](https://www.apachefriends.org/) (PHP 8.2) untuk kemudahan instalasi di Windows.
 
@@ -96,6 +96,7 @@ php artisan migrate --seed
 ```
 
 Seeder akan membuat data awal berupa:
+
 - **Roles & Permissions** (admin, guru, proktor, siswa)
 - **Akun Admin**: `admin` / `admin123`
 - **3 Guru**: `budi.guru` / `guru123`, `siti.guru` / `guru123`, `ahmad.guru` / `guru123`
@@ -131,12 +132,12 @@ http://localhost/cbt-ai/public
 
 ## Akun Default
 
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | `admin` | `admin123` |
-| Guru | `budi.guru` | `guru123` |
-| Proktor | `proktor` | `proktor123` |
-| Siswa | `siswa000001` | `000001` |
+| Role    | Username      | Password     |
+| ------- | ------------- | ------------ |
+| Admin   | `admin`       | `admin123`   |
+| Guru    | `budi.guru`   | `guru123`    |
+| Proktor | `proktor`     | `proktor123` |
+| Siswa   | `siswa000001` | `000001`     |
 
 ---
 
@@ -144,18 +145,19 @@ http://localhost/cbt-ai/public
 
 Aplikasi mendukung import data dari file Excel (`.xlsx`, `.xls`, `.csv`) melalui menu **Admin > Import Data**:
 
-| Data | Format Kolom |
-|------|-------------|
-| Kelas | Nama Kelas \| Tingkat (X/XI/XII) \| Jurusan \| Tahun Ajaran |
-| Ruang Ujian | Kode \| Nama \| Kapasitas \| Lokasi |
-| Guru | NIP \| Nama \| Username \| Email \| Mapel \| No HP \| Alamat \| Password |
-| Proktor | Nama \| Username \| Kode Ruang \| Password |
-| Siswa | NIS \| NISN \| Nama \| JK \| Kelas \| Jurusan \| No HP \| Alamat |
-| Distribusi Ruang | NIS/Kelas \| Kode Ruang |
+| Data             | Format Kolom                                                             |
+| ---------------- | ------------------------------------------------------------------------ |
+| Kelas            | Nama Kelas \| Tingkat (X/XI/XII) \| Jurusan \| Tahun Ajaran              |
+| Ruang Ujian      | Kode \| Nama \| Kapasitas \| Lokasi                                      |
+| Guru             | NIP \| Nama \| Username \| Email \| Mapel \| No HP \| Alamat \| Password |
+| Proktor          | Nama \| Username \| Kode Ruang \| Password                               |
+| Siswa            | NIS \| NISN \| Nama \| JK \| Kelas \| Jurusan \| No HP \| Alamat         |
+| Distribusi Ruang | NIS/Kelas \| Kode Ruang                                                  |
 
 Template Excel dapat diunduh langsung dari halaman import.
 
 **Urutan import yang disarankan:**
+
 1. Kelas → 2. Ruang Ujian → 3. Guru → 4. Proktor → 5. Siswa → 6. Distribusi Ruang
 
 ---
@@ -163,6 +165,7 @@ Template Excel dapat diunduh langsung dari halaman import.
 ## Struktur Role & Hak Akses
 
 ### Admin
+
 - Kelola seluruh master data (jurusan, kelas, mapel, guru, siswa, ruang, proktor)
 - Kelola ujian (CRUD, publish, assign ruang)
 - Monitor ujian real-time
@@ -170,6 +173,7 @@ Template Excel dapat diunduh langsung dari halaman import.
 - Import/export data
 
 ### Guru
+
 - Kelola bank soal (CRUD, import dari Excel)
 - Kelola ujian (CRUD, publish, generate token)
 - Nilai essay
@@ -177,10 +181,12 @@ Template Excel dapat diunduh langsung dari halaman import.
 - Export laporan (Excel, PDF, Berita Acara)
 
 ### Proktor
+
 - Monitor ujian di ruang yang ditugaskan
 - Buka/reset/selesaikan peserta ujian
 
 ### Siswa
+
 - Ikuti ujian dengan token akses
 - Lihat riwayat & nilai ujian
 
@@ -219,14 +225,14 @@ php artisan up
 
 ## Troubleshooting
 
-| Masalah | Solusi |
-|---------|--------|
-| Error 500 setelah clone | Pastikan `composer install` dan `php artisan key:generate` sudah dijalankan |
-| Halaman blank / error class not found | Jalankan `composer dump-autoload` |
-| Gambar tidak muncul | Jalankan `php artisan storage:link` |
-| Error permission denied (Linux) | `chmod -R 775 storage bootstrap/cache` |
-| Session / cache error | `php artisan optimize:clear` |
-| Import Excel gagal | Pastikan ekstensi `php-zip` dan `php-gd` aktif |
+| Masalah                               | Solusi                                                                      |
+| ------------------------------------- | --------------------------------------------------------------------------- |
+| Error 500 setelah clone               | Pastikan `composer install` dan `php artisan key:generate` sudah dijalankan |
+| Halaman blank / error class not found | Jalankan `composer dump-autoload`                                           |
+| Gambar tidak muncul                   | Jalankan `php artisan storage:link`                                         |
+| Error permission denied (Linux)       | `chmod -R 775 storage bootstrap/cache`                                      |
+| Session / cache error                 | `php artisan optimize:clear`                                                |
+| Import Excel gagal                    | Pastikan ekstensi `php-zip` dan `php-gd` aktif                              |
 
 ---
 

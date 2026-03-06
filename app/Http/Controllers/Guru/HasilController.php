@@ -80,8 +80,8 @@ class HasilController extends Controller
         ->whereHas('soal', function ($q) {
             $q->where('tipe_soal', 'essay');
         })
-        ->whereNull('skor')
         ->with(['soal', 'pesertaUjian.siswa'])
+        ->orderByRaw('CASE WHEN skor IS NULL THEN 0 ELSE 1 END')
         ->get();
 
         return view('guru.hasil.nilaiEssay', compact('ujian', 'jawabanEssay'));

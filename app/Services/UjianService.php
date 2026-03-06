@@ -57,6 +57,37 @@ class UjianService
     }
 
     /**
+     * Buat record JawabanSiswa kosong untuk soal yang belum dijawab siswa.
+     * Ini memastikan semua soal (terutama essay) tercatat sehingga:
+     * - Bobot soal terhitung dalam penskoran
+     * - Guru dapat melihat dan menilai essay yang tidak dijawab
+     */
+    protected function buatJawabanKosongUntukSoalBelumDijawab(PesertaUjian $peserta): void
+    {
+        $ujian = $peserta->ujian;
+
+        // Ambil semua soal ID dalam ujian
+        $semuaSoalIds = $ujian->soal()->pluck('soal.id')->toArray();
+
+        // Ambil soal ID yang sudah dijawab
+        $sudahDijawabIds = $peserta->jawabanSiswa()->pluck('soal_id')->toArray();
+
+        // Cari soal yang belum dijawab
+        $belumDijawabIds = array_diff($semuaSoalIds, $sudahDijawabIds);
+
+        foreach ($belumDijawabIds as $soalId) {
+            JawabanSiswa::create([
+                'peserta_ujian_id' => $peserta->id,
+                'soal_id' => $soalId,
+                'jawaban' => null,
+                'ragu_ragu' => false,
+                'is_benar' => false,
+                'skor' => null,
+            ]);
+        }
+    }
+
+    /**
      * Simpan jawaban siswa
      */
     public function simpanJawaban(PesertaUjian $peserta, int $soalId, ?string $jawaban, bool $raguRagu = false): JawabanSiswa
@@ -83,6 +114,10 @@ class UjianService
                 'status' => 'selesai',
                 'waktu_selesai' => now(),
             ]);
+
+            // Buat record JawabanSiswa kosong untuk soal yang belum dijawab
+            // agar semua soal (termasuk essay) terhitung dan bisa dinilai guru
+            $this->buatJawabanKosongUntukSoalBelumDijawab($peserta);
 
             // Hitung nilai otomatis
             $hasil = $this->hitungNilai($peserta);
