@@ -20,9 +20,23 @@ class SiswaController extends Controller
         $this->ujianService = $ujianService;
     }
 
+    /**
+     * Ambil profil siswa dari cache agar tidak query DB di tiap navigasi soal.
+     * Cache di-clear saat logout (lihat AuthenticatedSessionController).
+     * TTL 30 menit — cukup untuk seluruh durasi ujian.
+     */
+    private function getSiswa(): \App\Models\Siswa
+    {
+        return Cache::remember(
+            'siswa_profile:' . auth()->id(),
+            now()->addMinutes(30),
+            fn () => auth()->user()->siswa
+        );
+    }
+
     public function dashboard()
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $kelasId = $siswa->kelas_id;
 
         $ujianTersedia = Ujian::whereIn('status', ['publish', 'berlangsung'])
@@ -43,7 +57,7 @@ class SiswaController extends Controller
 
     public function ujianIndex()
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
 
         $ujian = Ujian::whereIn('status', ['publish', 'berlangsung'])
             ->whereHas('kelas', fn($q) => $q->where('kelas.id', $siswa->kelas_id))
@@ -73,7 +87,7 @@ class SiswaController extends Controller
             return back()->with('error', 'Token ujian tidak valid.');
         }
 
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $errors = $this->ujianService->cekAksesUjian($ujian, $siswa, $request->ip());
 
         if (!empty($errors)) {
@@ -85,7 +99,7 @@ class SiswaController extends Controller
 
     public function konfirmasi(Ujian $ujian)
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $ujian->load('mapel');
         $ujian->loadCount('soal');
 
@@ -99,7 +113,7 @@ class SiswaController extends Controller
 
     public function mulaiUjian(Ujian $ujian)
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
 
         $errors = $this->ujianService->cekAksesUjian($ujian, $siswa, request()->ip());
         if (!empty($errors)) {
@@ -124,7 +138,7 @@ class SiswaController extends Controller
 
     public function kerjakan(Ujian $ujian, int $nomor = 1)
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $peserta = PesertaUjian::where('ujian_id', $ujian->id)
             ->where('siswa_id', $siswa->id)
             ->firstOrFail();
@@ -187,7 +201,7 @@ class SiswaController extends Controller
 
     public function simpanJawaban(Request $request, Ujian $ujian)
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $peserta = PesertaUjian::where('ujian_id', $ujian->id)
             ->where('siswa_id', $siswa->id)
             ->firstOrFail();
@@ -219,7 +233,7 @@ class SiswaController extends Controller
 
     public function submitKonfirmasi(Ujian $ujian)
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $peserta = PesertaUjian::where('ujian_id', $ujian->id)
             ->where('siswa_id', $siswa->id)
             ->firstOrFail();
@@ -235,7 +249,7 @@ class SiswaController extends Controller
 
     public function submitUjian(Ujian $ujian)
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $peserta = PesertaUjian::where('ujian_id', $ujian->id)
             ->where('siswa_id', $siswa->id)
             ->firstOrFail();
@@ -250,7 +264,7 @@ class SiswaController extends Controller
 
     public function selesai(Ujian $ujian)
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $hasil = HasilUjian::where('ujian_id', $ujian->id)
             ->where('siswa_id', $siswa->id)
             ->first();
@@ -260,7 +274,7 @@ class SiswaController extends Controller
 
     public function riwayat()
     {
-        $siswa = auth()->user()->siswa;
+        $siswa = $this->getSiswa();
         $hasil = HasilUjian::where('siswa_id', $siswa->id)
             ->with(['ujian.mapel'])
             ->latest()
@@ -291,7 +305,7 @@ class SiswaController extends Controller
         $autoSubmit = false;
 
         if ($isPelanggaran && $ujianId) {
-            $siswa = auth()->user()->siswa;
+            $siswa = $this->getSiswa();
             $peserta = PesertaUjian::where('ujian_id', $ujianId)
                 ->where('siswa_id', $siswa->id)
                 ->where('status', 'mengerjakan')

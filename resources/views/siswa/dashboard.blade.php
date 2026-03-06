@@ -94,23 +94,40 @@
     .riwayat-item {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid #f1f5f9;
-    }
-    .riwayat-item:last-child { border-bottom: none; }
-    .riwayat-item .nilai-badge {
-        min-width: 52px;
-        height: 52px;
+        gap: 14px;
+        padding: 13px 16px;
         border-radius: 12px;
+        margin-bottom: 8px;
+        background: #f8fafc;
+        transition: background 0.15s;
+    }
+    .riwayat-item:last-child { margin-bottom: 0; }
+    .riwayat-item:hover { background: #f1f5f9; }
+    .nilai-badge {
+        min-width: 48px;
+        height: 48px;
+        border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-weight: 700;
-        font-size: 1rem;
+        font-size: 0.95rem;
         flex-shrink: 0;
+        border: 2px solid transparent;
     }
-    .nilai-lulus { background: #dcfce7; color: #16a34a; }
-    .nilai-tidak-lulus { background: #fee2e2; color: #dc2626; }
-    .nilai-hidden { background: #f1f5f9; color: #94a3b8; }
+    .nilai-lulus { background: #dcfce7; color: #16a34a; border-color: #bbf7d0; }
+    .nilai-tidak-lulus { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+    .nilai-hidden { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+    .riwayat-nama { font-size: 0.88rem; font-weight: 600; color: #1e293b; }
+    .riwayat-meta { font-size: 0.72rem; color: #94a3b8; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+    .riwayat-meta span { display: flex; align-items: center; gap: 3px; }
+    .status-pill {
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 20px;
+        line-height: 1.6;
+    }
+    .status-lulus { background: #dcfce7; color: #16a34a; }
+    .status-tidak-lulus { background: #fee2e2; color: #dc2626; }
     .section-card {
         background: white;
         border-radius: 14px;
@@ -251,34 +268,38 @@
                 </div>
                 <a href="{{ route('siswa.riwayat') }}" class="text-primary small text-decoration-none">Semua <i class="bi bi-chevron-right"></i></a>
             </div>
-            <div class="px-3 py-2">
+            <div class="p-3">
                 @forelse($riwayat->take(5) as $h)
                 @php
-                    $tampil = $h->ujian && $h->ujian->tampilkan_nilai;
-                    $lulus  = $h->nilai_akhir >= ($h->ujian->kkm ?? 75);
+                    $tampil     = $h->ujian && $h->ujian->tampilkan_nilai;
+                    $lulus      = $h->nilai_akhir >= ($h->ujian->kkm ?? 75);
                     $nilaiClass = !$tampil ? 'nilai-hidden' : ($lulus ? 'nilai-lulus' : 'nilai-tidak-lulus');
                     $nilaiText  = !$tampil ? '?' : number_format($h->nilai_akhir, 0);
+                    $tgl        = $h->waktu_selesai ? $h->waktu_selesai->translatedFormat('d M Y') : null;
                 @endphp
                 <div class="riwayat-item">
                     <div class="nilai-badge {{ $nilaiClass }}">{{ $nilaiText }}</div>
-                    <div class="flex-grow-1 min-width-0">
-                        <div class="fw-semibold text-truncate" style="font-size:0.88rem;">{{ $h->ujian->nama ?? '-' }}</div>
-                        <div class="d-flex gap-2 mt-1 flex-wrap">
-                            <span class="info-chip" style="font-size:0.72rem;color:#94a3b8;">
-                                <i class="bi bi-book"></i> {{ $h->ujian->mapel->nama ?? '-' }}
-                            </span>
-                            @if($tampil)
-                            <span class="info-chip" style="font-size:0.72rem;{{ $lulus ? 'color:#16a34a;' : 'color:#dc2626;' }}">
-                                <i class="bi bi-{{ $lulus ? 'check-circle-fill' : 'x-circle-fill' }}"></i>
-                                {{ $lulus ? 'Lulus' : 'Tidak Lulus' }}
-                            </span>
+                    <div class="flex-grow-1" style="min-width:0;">
+                        <div class="riwayat-nama text-truncate">{{ $h->ujian->nama ?? '-' }}</div>
+                        <div class="riwayat-meta">
+                            <span><i class="bi bi-book"></i> {{ $h->ujian->mapel->nama ?? '-' }}</span>
+                            @if($tgl)
+                            <span><i class="bi bi-calendar3"></i> {{ $tgl }}</span>
+                            @endif
+                            @if($h->jumlah_soal)
+                            <span><i class="bi bi-check2-square"></i> {{ $h->benar_pg ?? 0 }}/{{ $h->jumlah_soal }}</span>
                             @endif
                         </div>
                     </div>
+                    @if($tampil)
+                    <span class="status-pill {{ $lulus ? 'status-lulus' : 'status-tidak-lulus' }} flex-shrink-0">
+                        {{ $lulus ? 'Lulus' : 'Tidak Lulus' }}
+                    </span>
+                    @endif
                 </div>
                 @empty
                 <div class="text-center py-5">
-                    <div style="width:56px;height:56px;background:#f1f5f9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.5rem;color:#94a3b8;">
+                    <div style="width:56px;height:56px;background:#f1f5f9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.5rem;color:#94a3b8;">
                         <i class="bi bi-clock-history"></i>
                     </div>
                     <div class="text-muted small">Belum ada riwayat ujian</div>
@@ -440,7 +461,7 @@
     }
     .btn-info-ok {
         background: var(--info-color);
-        color: white;
+        color: rgb(222, 254, 255);
         border: none;
         padding: 11px 36px;
         border-radius: 50px;
@@ -451,12 +472,12 @@
         align-items: center;
         gap: 8px;
         transition: all 0.2s;
-        box-shadow: 0 4px 15px {{ $isPerempuan ? 'rgba(236,72,153,0.35)' : 'rgba(37,99,235,0.35)' }};
+        box-shadow: 0 4px 15px {{ $isPerempuan ? 'rgba(255,194,209,0.35)' : 'rgba(37,99,235,0.35)' }};
     }
     .btn-info-ok:hover {
         background: var(--info-color-dark);
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px {{ $isPerempuan ? 'rgba(236,72,153,0.45)' : 'rgba(37,99,235,0.45)' }};
+        box-shadow: 0 6px 20px {{ $isPerempuan ? 'rgba(255,194,209,0.45)' : 'rgba(37,99,235,0.45)' }};
     }
 </style>
 @endpush
@@ -465,7 +486,9 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const KEY   = 'info_modal_shown_{{ auth()->id() }}';
-        const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+        // Gunakan tanggal lokal agar reset tepat jam 00:00 waktu setempat
+        const d     = new Date();
+        const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 
         if (localStorage.getItem(KEY) !== today) {
             const modal = new bootstrap.Modal(document.getElementById('modalInfoUjian'));
