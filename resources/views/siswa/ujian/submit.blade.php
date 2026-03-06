@@ -96,6 +96,10 @@
         font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: opacity 0.15s;
     }
     .cf-btn-ok:hover { opacity: 0.88; }
+
+    /* Sembunyikan sidebar & topbar di halaman ini */
+    #sidebar, #sidebarBackdrop, .topbar { display: none !important; }
+    .main-content { margin-left: 0 !important; padding: 32px 16px !important; }
 </style>
 @endpush
 
