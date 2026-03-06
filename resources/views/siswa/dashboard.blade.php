@@ -334,13 +334,13 @@
                     </div>
                     <div>
                         <div class="info-section-title">Yang Terpenting</div>
-                        <p class="info-doa-text">Jangan lupa untuk <strong>berdoa</strong> sebelum mengerjakan ujian. Semoga hasilnya terbaik! 🙏</p>
+                        <p class="info-doa-text">Jangan lupa untuk <strong>berdoa</strong> sebelum mengerjakan ujian. Semoga hasilnya terbaik!!!</p>
                     </div>
                 </div>
             </div>
             <div class="info-modal-footer">
                 <button type="button" class="btn-info-ok" data-bs-dismiss="modal">
-                    <i class="bi bi-check2-circle"></i> Siap, Mengerti!
+                    <i class="bi bi-check2-circle"></i> SIAPP, MENGERTII!!!
                 </button>
             </div>
         </div>
@@ -464,8 +464,17 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const modal = new bootstrap.Modal(document.getElementById('modalInfoUjian'));
-        modal.show();
+        const KEY   = 'info_modal_shown_{{ auth()->id() }}';
+        const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+        if (localStorage.getItem(KEY) !== today) {
+            const modal = new bootstrap.Modal(document.getElementById('modalInfoUjian'));
+            modal.show();
+
+            document.getElementById('modalInfoUjian').addEventListener('hidden.bs.modal', function () {
+                localStorage.setItem(KEY, today);
+            });
+        }
     });
 </script>
 @endpush
