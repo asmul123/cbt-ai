@@ -83,7 +83,7 @@
                 </form>
 
                 <div class="text-center mt-4">
-                    <a href="{{ route('siswa.ujian.index') }}" class="text-muted small text-decoration-none">
+                    <a href="{{ route('siswa.ujian.index') }}" class="small text-decoration-none" style="color: #ec4899;">
                         <i class="bi bi-arrow-left me-1"></i>Kembali ke Daftar Ujian
                     </a>
                 </div>

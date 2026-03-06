@@ -49,17 +49,21 @@
         }
         .main-content {
             margin-left: var(--sidebar-width);
-            padding: 20px;
+            padding: 80px 20px 20px;
             min-height: 100vh;
         }
         .topbar {
             background: white;
             padding: 12px 20px;
-            margin: -20px -20px 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            z-index: 998;
         }
         .stat-card {
             border-radius: 12px;
@@ -89,7 +93,8 @@
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; }
+            .main-content { margin-left: 0; padding-top: 80px; }
+            .topbar { left: 0; }
         }
         .sidebar-backdrop {
             display: none;
