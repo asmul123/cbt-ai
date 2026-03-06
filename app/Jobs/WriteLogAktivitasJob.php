@@ -18,12 +18,6 @@ class WriteLogAktivitasJob implements ShouldQueue
      */
     public int $tries = 3;
 
-    /**
-     * Jangan dispatch ke queue sampai transaksi DB commit.
-     * Penting untuk call dari dalam DB::transaction() seperti di UjianService.
-     */
-    public bool $afterCommit = true;
-
     public function __construct(
         public readonly int     $userId,
         public readonly string  $aktivitas,
@@ -31,7 +25,11 @@ class WriteLogAktivitasJob implements ShouldQueue
         public readonly ?string $keterangan,
         public readonly ?string $ipAddress,
         public readonly ?string $userAgent,
-    ) {}
+    ) {
+        // Jangan dispatch ke queue sampai transaksi DB commit.
+        // Penting untuk call dari dalam DB::transaction() seperti di UjianService.
+        $this->afterCommit();
+    }
 
     public function handle(): void
     {
