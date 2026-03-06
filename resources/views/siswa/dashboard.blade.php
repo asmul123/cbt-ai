@@ -59,6 +59,12 @@
     }
     .dash-stat .stat-value { font-size: 1.8rem; font-weight: 700; line-height: 1; }
     .dash-stat .stat-label { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+    @media (max-width: 576px) {
+        .dash-stat { flex-direction: column; align-items: center; text-align: center; padding: 14px 8px; gap: 8px; }
+        .dash-stat .stat-icon { width: 36px; height: 36px; font-size: 1rem; flex-shrink: 0; }
+        .dash-stat .stat-value { font-size: 1.4rem; }
+        .dash-stat .stat-label { font-size: 0.7rem; white-space: normal; line-height: 1.3; }
+    }
     /* Ujian Cards */
     .ujian-card {
         border: 1.5px solid #e2e8f0;
@@ -159,7 +165,7 @@
             <div class="stat-icon" style="background:#dbeafe;color:#2563eb;"><i class="bi bi-journal-check"></i></div>
             <div>
                 <div class="stat-value" style="color:#2563eb;">{{ $tersedia }}</div>
-                <div class="stat-label">Tersedia</div>
+                <div class="stat-label">Ujian Tersedia</div>
             </div>
         </a>
     </div>
@@ -168,7 +174,7 @@
             <div class="stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="bi bi-patch-check-fill"></i></div>
             <div>
                 <div class="stat-value" style="color:#16a34a;">{{ $selesai }}</div>
-                <div class="stat-label">Selesai</div>
+                <div class="stat-label">Ujian Selesai</div>
             </div>
         </div>
     </div>
@@ -177,7 +183,7 @@
             <div class="stat-icon" style="background:#fef9c3;color:#ca8a04;"><i class="bi bi-star-fill"></i></div>
             <div>
                 <div class="stat-value" style="color:#ca8a04;">{{ $rataRata }}</div>
-                <div class="stat-label">Rata-rata</div>
+                <div class="stat-label">Nilai Rata-rata</div>
             </div>
         </div>
     </div>
@@ -324,7 +330,7 @@
                 </div>
                 <div class="info-section info-section-doa">
                     <div class="info-section-icon">
-                        <i class="bi bi-heart-fill"></i>
+                        <i class="bi {{ $isPerempuan ? 'bi-heart-fill' : 'bi-stars' }}"></i>
                     </div>
                     <div>
                         <div class="info-section-title">Yang Terpenting</div>
