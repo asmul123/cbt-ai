@@ -39,6 +39,7 @@ class ExportController extends Controller
     public function pdfBeritaAcara(Ujian $ujian)
     {
         $ujian->load(['mapel', 'guru', 'kelas', 'peserta.siswa']);
+        $ujian->loadCount('soal');
 
         $stats = [
             'total' => $ujian->peserta->count(),

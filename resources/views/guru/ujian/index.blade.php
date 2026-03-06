@@ -30,7 +30,7 @@
                         <td class="fw-semibold">{{ $u->nama }}</td>
                         <td>{{ $u->mapel->nama ?? '-' }}</td>
                         <td>{{ $u->durasi }} menit</td>
-                        <td><span class="badge bg-primary">{{ $u->soal->count() }}</span></td>
+                        <td><span class="badge bg-primary">{{ $u->soal_count }}</span></td>
                         <td>
                             @if($u->token)
                                 <span class="badge bg-dark font-monospace">{{ $u->token }}</span>

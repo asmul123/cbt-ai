@@ -36,14 +36,14 @@ class SoalController extends Controller
         }
 
         $soal = $query->latest()->paginate(20);
-        $mapel = Mapel::where('is_active', true)->get();
+        $mapel = cached_mapel_aktif();
 
         return view('guru.soal.index', compact('soal', 'mapel'));
     }
 
     public function create()
     {
-        $mapel = Mapel::where('is_active', true)->get();
+        $mapel = cached_mapel_aktif();
         return view('guru.soal.create', compact('mapel'));
     }
 
@@ -123,7 +123,7 @@ class SoalController extends Controller
     public function edit(Soal $soal)
     {
         $soal->load('opsi');
-        $mapel = Mapel::where('is_active', true)->get();
+        $mapel = cached_mapel_aktif();
         return view('guru.soal.edit', compact('soal', 'mapel'));
     }
 
@@ -195,7 +195,7 @@ class SoalController extends Controller
 
     public function import()
     {
-        $mapel = Mapel::where('is_active', true)->get();
+        $mapel = cached_mapel_aktif();
         return view('guru.soal.import', compact('mapel'));
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Jobs\WriteLogAktivitasJob;
 
 class LogAktivitas extends Model
 {
@@ -30,15 +31,17 @@ class LogAktivitas extends Model
         return $this->belongsTo(Ujian::class);
     }
 
-    public static function log(int $userId, string $aktivitas, ?int $ujianId = null, ?string $keterangan = null): self
+    public static function log(int $userId, string $aktivitas, ?int $ujianId = null, ?string $keterangan = null): void
     {
-        return self::create([
-            'user_id' => $userId,
-            'ujian_id' => $ujianId,
-            'aktivitas' => $aktivitas,
-            'keterangan' => $keterangan,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-        ]);
+        // Tangkap ip & user-agent di sini (saat request masih ada),
+        // lalu kirim ke queue agar DB write tidak memblokir response.
+        WriteLogAktivitasJob::dispatch(
+            $userId,
+            $aktivitas,
+            $ujianId,
+            $keterangan,
+            request()->ip(),
+            request()->userAgent(),
+        );
     }
 }

@@ -97,7 +97,7 @@
                         </td>
                         <td>
                             @php
-                                $total = $ujian->soal->count();
+                                $total = $ujian->soal_count;
                                 $answered = $p->jawabanSiswa->count();
                                 $pct = $total > 0 ? ($answered / $total) * 100 : 0;
                             @endphp

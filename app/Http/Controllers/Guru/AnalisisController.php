@@ -23,6 +23,7 @@ class AnalisisController extends Controller
         $ujian = Ujian::where('guru_id', $guru->id)
             ->where('status', 'selesai')
             ->with('mapel')
+            ->withCount(['soal', 'peserta'])
             ->latest()
             ->get();
 

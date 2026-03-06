@@ -27,8 +27,8 @@ class UjianController extends Controller
     public function create()
     {
         $guru = auth()->user()->guru;
-        $mapel = Mapel::where('is_active', true)->get();
-        $kelas = Kelas::with('jurusan')->where('is_active', true)->get();
+        $mapel = cached_mapel_aktif();
+        $kelas = cached_kelas_aktif();
         return view('guru.ujian.create', compact('mapel', 'kelas'));
     }
 
@@ -74,8 +74,8 @@ class UjianController extends Controller
 
     public function edit(Ujian $ujian)
     {
-        $mapel = Mapel::where('is_active', true)->get();
-        $kelas = Kelas::with('jurusan')->where('is_active', true)->get();
+        $mapel = cached_mapel_aktif();
+        $kelas = cached_kelas_aktif();
         $ujian->load('kelas');
         return view('guru.ujian.edit', compact('ujian', 'mapel', 'kelas'));
     }

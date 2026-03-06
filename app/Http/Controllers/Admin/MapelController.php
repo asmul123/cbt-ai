@@ -17,7 +17,7 @@ class MapelController extends Controller
 
     public function create()
     {
-        $jurusan = Jurusan::where('is_active', true)->get();
+        $jurusan = cached_jurusan_aktif();
         return view('admin.mapel.create', compact('jurusan'));
     }
 
@@ -30,12 +30,13 @@ class MapelController extends Controller
         ]);
 
         Mapel::create($request->all());
+        forget_master_cache();
         return redirect()->route('admin.mapel.index')->with('success', 'Mata pelajaran berhasil ditambahkan.');
     }
 
     public function edit(Mapel $mapel)
     {
-        $jurusan = Jurusan::where('is_active', true)->get();
+        $jurusan = cached_jurusan_aktif();
         return view('admin.mapel.edit', compact('mapel', 'jurusan'));
     }
 
@@ -48,12 +49,14 @@ class MapelController extends Controller
         ]);
 
         $mapel->update($request->all());
+        forget_master_cache();
         return redirect()->route('admin.mapel.index')->with('success', 'Mata pelajaran berhasil diperbarui.');
     }
 
     public function destroy(Mapel $mapel)
     {
         $mapel->delete();
+        forget_master_cache();
         return redirect()->route('admin.mapel.index')->with('success', 'Mata pelajaran berhasil dihapus.');
     }
 }

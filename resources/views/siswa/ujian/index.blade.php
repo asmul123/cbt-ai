@@ -61,7 +61,7 @@
                         <div class="stat-label">Durasi</div>
                     </div>
                     <div class="col-4 stat-item border-end">
-                        <div class="stat-value">{{ $u->jumlah_soal ?? $u->soal->count() }}</div>
+                        <div class="stat-value">{{ $u->soal_count ?? 0 }}</div>
                         <div class="stat-label">Soal</div>
                     </div>
                     <div class="col-4 stat-item">

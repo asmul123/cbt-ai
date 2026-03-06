@@ -9,6 +9,7 @@ use App\Models\JawabanSiswa;
 use App\Models\HasilUjian;
 use App\Models\LogAktivitas;
 use App\Models\Siswa;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class UjianService
@@ -174,7 +175,7 @@ class UjianService
         $essayBelumDinilai = $jawaban->filter(fn($j) => $j->soal->tipe_soal === 'essay' && $j->skor === null)->count();
         $statusKelulusan = $essayBelumDinilai > 0 ? 'belum_dinilai' : ($nilaiAkhir >= $ujian->kkm ? 'lulus' : 'tidak_lulus');
 
-        return HasilUjian::updateOrCreate(
+        $hasil = HasilUjian::updateOrCreate(
             ['ujian_id' => $ujian->id, 'siswa_id' => $peserta->siswa_id],
             [
                 'peserta_ujian_id' => $peserta->id,
@@ -192,6 +193,11 @@ class UjianService
                     : null,
             ]
         );
+
+        // Cache hasil ujian selama 24 jam
+        Cache::put("hasil_ujian:{$peserta->siswa_id}:{$ujian->id}", $hasil, now()->addHours(24));
+
+        return $hasil;
     }
 
     /**
