@@ -128,6 +128,7 @@
     }
     .status-lulus { background: #dcfce7; color: #16a34a; }
     .status-tidak-lulus { background: #fee2e2; color: #dc2626; }
+    .status-proses { background: #fef9c3; color: #92400e; }
     .section-card {
         background: white;
         border-radius: 14px;
@@ -271,11 +272,12 @@
             <div class="p-3">
                 @forelse($riwayat->take(5) as $h)
                 @php
-                    $tampil     = $h->ujian && $h->ujian->tampilkan_nilai;
-                    $lulus      = $h->nilai_akhir >= ($h->ujian->kkm ?? 75);
-                    $nilaiClass = !$tampil ? 'nilai-hidden' : ($lulus ? 'nilai-lulus' : 'nilai-tidak-lulus');
-                    $nilaiText  = !$tampil ? '?' : number_format($h->nilai_akhir, 0);
-                    $tgl        = $h->waktu_selesai ? $h->waktu_selesai->translatedFormat('d M Y') : null;
+                    $tampil       = $h->ujian && $h->ujian->tampilkan_nilai;
+                    $belumDinilai = $h->status === 'belum_dinilai';
+                    $lulus        = !$belumDinilai && $h->nilai_akhir >= ($h->ujian->kkm ?? 75);
+                    $nilaiClass   = !$tampil ? 'nilai-hidden' : ($belumDinilai ? 'nilai-hidden' : ($lulus ? 'nilai-lulus' : 'nilai-tidak-lulus'));
+                    $nilaiText    = !$tampil ? '?' : ($belumDinilai ? '~' : number_format($h->nilai_akhir, 0));
+                    $tgl          = $h->waktu_selesai ? $h->waktu_selesai->translatedFormat('d M Y') : null;
                 @endphp
                 <div class="riwayat-item">
                     <div class="nilai-badge {{ $nilaiClass }}">{{ $nilaiText }}</div>
@@ -291,7 +293,11 @@
                             @endif
                         </div>
                     </div>
-                    @if($tampil)
+                    @if($belumDinilai)
+                    <span class="status-pill status-proses flex-shrink-0">
+                        <i class="bi bi-hourglass-split"></i> Proses
+                    </span>
+                    @elseif($tampil)
                     <span class="status-pill {{ $lulus ? 'status-lulus' : 'status-tidak-lulus' }} flex-shrink-0">
                         {{ $lulus ? 'Lulus' : 'Tidak Lulus' }}
                     </span>

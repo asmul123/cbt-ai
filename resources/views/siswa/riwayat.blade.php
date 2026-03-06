@@ -75,13 +75,14 @@
 
 @forelse($hasil as $h)
 @php
-    $tampil     = $h->ujian && $h->ujian->tampilkan_nilai;
-    $nilai      = $tampil ? number_format($h->nilai_akhir, 0) : null;
-    $lulus      = $tampil && $h->nilai_akhir >= ($h->ujian->kkm ?? 75);
-    $nilaiClass = !$tampil ? 'nilai-hidden' : ($lulus ? 'nilai-lulus' : 'nilai-tidak-lulus');
-    $benar      = $h->benar_pg ?? 0;
-    $salah      = ($h->jumlah_soal ?? 0) - $benar;
-    $tgl        = ($h->waktu_selesai ?? $h->created_at)?->translatedFormat('d M Y · H:i');
+    $tampil       = $h->ujian && $h->ujian->tampilkan_nilai;
+    $belumDinilai = $h->status === 'belum_dinilai';
+    $nilai        = $tampil ? number_format($h->nilai_akhir, 0) : null;
+    $lulus        = $tampil && !$belumDinilai && $h->nilai_akhir >= ($h->ujian->kkm ?? 75);
+    $nilaiClass   = !$tampil ? 'nilai-hidden' : ($belumDinilai ? 'nilai-hidden' : ($lulus ? 'nilai-lulus' : 'nilai-tidak-lulus'));
+    $benar        = $h->benar_pg ?? 0;
+    $salah        = ($h->jumlah_soal ?? 0) - $benar;
+    $tgl          = ($h->waktu_selesai ?? $h->created_at)?->translatedFormat('d M Y · H:i');
 @endphp
 <div class="riwayat-card">
     {{-- Nilai --}}
@@ -117,8 +118,12 @@
             <span class="status-badge badge-lain">{{ $h->status }}</span>
         @endif
 
-        @if($tampil)
-        <span class="status-badge {{ $lulus ? 'badge-selesai' : 'bg-danger text-white' }}" style="background:{{ $lulus ? '' : '#fee2e2' }};color:{{ $lulus ? '' : '#dc2626' }};">
+        @if($belumDinilai)
+        <span class="status-badge" style="background:#fef9c3;color:#92400e;">
+            <i class="bi bi-hourglass-split me-1"></i>Proses
+        </span>
+        @elseif($tampil)
+        <span class="status-badge {{ $lulus ? 'badge-selesai' : '' }}" style="{{ !$lulus ? 'background:#fee2e2;color:#dc2626;' : '' }}">
             {{ $lulus ? 'Lulus' : 'Tidak Lulus' }}
         </span>
         @endif
