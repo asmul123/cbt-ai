@@ -92,10 +92,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
     // Quick Login Proktor
     Route::get('quick-login', [Admin\QuickLoginController::class, 'index'])->name('quick-login.index');
-    Route::post('quick-login/{user}', [Admin\QuickLoginController::class, 'loginAs'])->name('quick-login.loginAs');
+    Route::post('quick-login/login/{user}', [Admin\QuickLoginController::class, 'loginAs'])->name('quick-login.loginAs');
 });
 
-// Kembali dari impersonate proktor ke admin (tanpa middleware role)
+// Kembali dari impersonate proktor ke admin (di luar group admin karena role aktif = proktor)
 Route::post('admin/quick-login/kembali', [Admin\QuickLoginController::class, 'kembali'])
     ->middleware('auth')
     ->name('admin.quick-login.kembali');
