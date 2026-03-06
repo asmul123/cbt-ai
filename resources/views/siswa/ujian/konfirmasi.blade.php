@@ -231,7 +231,7 @@
         <div class="confirm-title">Mulai Ujian Sekarang?</div>
         <div class="confirm-desc">
             Waktu <strong>{{ $ujian->durasi }} menit</strong> akan langsung berjalan setelah dikonfirmasi.<br>
-            Pastikan kamu sudah siap!
+            Pastikan kamu sudah siap semangattt!
         </div>
         <div class="confirm-actions">
             <button class="cf-btn-cancel" onclick="hideMulaiConfirm()">
