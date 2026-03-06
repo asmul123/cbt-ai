@@ -189,6 +189,12 @@
                     <i class="bi bi-clock-history"></i> Riwayat Ujian
                 </a>
             @endrole
+
+            {{-- Menu umum semua role --}}
+            <hr class="border-light mx-3 my-2 opacity-25">
+            <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}" href="{{ route('profile.edit') }}">
+                <i class="bi bi-shield-lock"></i> Ubah Kata Sandi
+            </a>
         </nav>
     </div>
 
@@ -237,6 +243,16 @@
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <ul class="mb-0">
                     @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        @if($errors->updatePassword->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul class="mb-0">
+                    @foreach($errors->updatePassword->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
