@@ -10,16 +10,107 @@
     <style>
         body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
         .exam-header {
-            background: linear-gradient(135deg, #1e3a5f, #2c5282);
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
             color: white;
-            padding: 12px 20px;
+            padding: 0;
             position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
         }
-        .timer { font-size: 1.5rem; font-weight: 700; font-family: monospace; }
+        .exam-header-inner {
+            display: flex;
+            align-items: stretch;
+            min-height: 64px;
+        }
+        /* Kiri: info ujian */
+        .exam-info {
+            flex: 1;
+            padding: 10px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+            border-right: 1px solid rgba(255,255,255,0.12);
+        }
+        .exam-info .exam-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+        .exam-info .exam-sub {
+            font-size: 0.72rem;
+            opacity: 0.7;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Tengah: timer */
+        .exam-timer-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 20px;
+            border-right: 1px solid rgba(255,255,255,0.12);
+            min-width: 110px;
+        }
+        .timer {
+            font-size: 1.4rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
         .timer.warning { color: #fbbf24; animation: blink 1s infinite; }
-        .timer.danger { color: #ef4444; animation: blink 0.5s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
+        .timer.danger  { color: #ef4444; animation: blink 0.5s infinite; }
+        @keyframes blink { 50% { opacity: 0.4; } }
+        .timer-label { font-size: 0.65rem; opacity: 0.6; margin-top: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
+        /* Kanan: aksi */
+        .exam-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+        }
+        .violation-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(239,68,68,0.9);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .btn-kumpulkan {
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.4);
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 7px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: background 0.15s;
+            line-height: 1;
+        }
+        .btn-kumpulkan:hover { background: rgba(255,255,255,0.25); color: white; }
+        @media (max-width: 480px) {
+            .exam-timer-block { padding: 8px 12px; min-width: 90px; }
+            .timer { font-size: 1.15rem; }
+            .exam-actions { padding: 8px 10px; gap: 6px; }
+            .btn-kumpulkan span { display: none; }
+        }
         .soal-card { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .nav-soal { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .nav-soal .btn-nav {
@@ -58,27 +149,29 @@
 
     <!-- Header -->
     <div class="exam-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h6 class="mb-0">{{ $ujian->nama }}</h6>
-                <small class="opacity-75">{{ $ujian->mapel->nama ?? '' }} | Soal {{ $nomor }}/{{ $totalSoal }}</small>
+        <div class="exam-header-inner">
+            {{-- Kiri: info ujian --}}
+            <div class="exam-info">
+                <div class="exam-title">{{ $ujian->nama }}</div>
+                <div class="exam-sub">{{ $ujian->mapel->nama ?? '' }} &nbsp;·&nbsp; Soal {{ $nomor }}/{{ $totalSoal }}</div>
             </div>
-            <div class="text-center">
+
+            {{-- Tengah: timer --}}
+            <div class="exam-timer-block">
                 <div class="timer" id="timer">--:--:--</div>
-                <small class="opacity-75">Sisa Waktu</small>
+                <div class="timer-label">Sisa Waktu</div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                @if(($peserta->jumlah_pelanggaran ?? 0) > 0)
-                <span class="badge bg-danger" id="headerViolation" title="Jumlah pelanggaran">
-                    <i class="bi bi-exclamation-triangle"></i> <span id="headerViolationCount">{{ $peserta->jumlah_pelanggaran }}</span>/5
+
+            {{-- Kanan: pelanggaran + tombol --}}
+            <div class="exam-actions">
+                @php $jmlPelanggaran = $peserta->jumlah_pelanggaran ?? 0; @endphp
+                <span class="violation-pill {{ $jmlPelanggaran === 0 ? 'd-none' : '' }}" id="headerViolation" title="Jumlah pelanggaran">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span id="headerViolationCount">{{ $jmlPelanggaran }}</span>/5
                 </span>
-                @else
-                <span class="badge bg-danger d-none" id="headerViolation" title="Jumlah pelanggaran">
-                    <i class="bi bi-exclamation-triangle"></i> <span id="headerViolationCount">0</span>/5
-                </span>
-                @endif
-                <a href="{{ route('siswa.ujian.submitKonfirmasi', $ujian) }}" class="btn btn-warning btn-sm">
-                    <i class="bi bi-send"></i> Selesai & Kumpulkan
+                <a href="{{ route('siswa.ujian.submitKonfirmasi', $ujian) }}" class="btn-kumpulkan">
+                    <i class="bi bi-send-fill"></i>
+                    <span>Selesai &amp; Kumpulkan</span>
                 </a>
             </div>
         </div>
