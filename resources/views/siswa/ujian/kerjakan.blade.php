@@ -311,6 +311,14 @@
                             </label>
                         </div>
                     </div>
+
+                    <div class="mt-3 pt-3" style="border-top:1px solid #f1f5f9;">
+                        <a href="{{ route('siswa.ujian.submitKonfirmasi', $ujian) }}"
+                           class="btn-kumpulkan-panel w-100 d-flex align-items-center justify-content-center gap-2">
+                            <i class="bi bi-send-fill"></i>
+                            Selesai &amp; Kumpulkan
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
