@@ -123,4 +123,24 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | School Information (KOP Surat)
+    |--------------------------------------------------------------------------
+    */
+
+    'sekolah' => [
+        'nama' => env('SEKOLAH_NAMA', 'SMK NEGERI 1 GARUT'),
+        'instansi' => env('SEKOLAH_INSTANSI', 'PEMERINTAH DAERAH PROVINSI JAWA BARAT'),
+        'dinas' => env('SEKOLAH_DINAS', 'DINAS PENDIDIKAN'),
+        'alamat' => env('SEKOLAH_ALAMAT', 'Jalan Cimanuk No. 309 A'),
+        'telp' => env('SEKOLAH_TELP', '(0262) 233316'),
+        'fax' => env('SEKOLAH_FAX', '(0262) 233316'),
+        'website' => env('SEKOLAH_WEBSITE', 'smknegeri1garut.sch.id'),
+        'email' => env('SEKOLAH_EMAIL', 'smkn1garut@ymail.com'),
+        'kecamatan' => env('SEKOLAH_KECAMATAN', 'Tarogong Kidul'),
+        'kota' => env('SEKOLAH_KOTA', 'Garut'),
+        'kodepos' => env('SEKOLAH_KODEPOS', '44151'),
+    ],
+
 ];

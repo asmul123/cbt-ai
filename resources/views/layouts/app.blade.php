@@ -157,6 +157,9 @@
                 <a class="nav-link {{ request()->routeIs('admin.quick-login.*') ? 'active' : '' }}" href="{{ route('admin.quick-login.index') }}">
                     <i class="bi bi-box-arrow-in-right"></i> Quick Login Proktor
                 </a>
+                <a class="nav-link {{ request()->routeIs('admin.cetak.*') ? 'active' : '' }}" href="{{ route('admin.cetak.index') }}">
+                    <i class="bi bi-printer"></i> Cetak Dokumen
+                </a>
             @endrole
 
             @role('guru')
@@ -184,6 +187,9 @@
                 <a class="nav-link {{ request()->routeIs('proktor.monitor.*') ? 'active' : '' }}" href="{{ route('proktor.monitor.index') }}">
                     <i class="bi bi-display"></i> Monitor Ujian
                 </a>
+                <a class="nav-link {{ request()->routeIs('proktor.berita-acara.*') ? 'active' : '' }}" href="{{ route('proktor.berita-acara.index') }}">
+                    <i class="bi bi-file-earmark-text"></i> Berita Acara
+                </a>
             @endrole
 
             @role('siswa')
@@ -195,6 +201,9 @@
                 </a>
                 <a class="nav-link {{ request()->routeIs('siswa.riwayat') ? 'active' : '' }}" href="{{ route('siswa.riwayat') }}">
                     <i class="bi bi-clock-history"></i> Riwayat Ujian
+                </a>
+                <a class="nav-link {{ request()->routeIs('siswa.daftar-hadir.*') ? 'active' : '' }}" href="{{ route('siswa.daftar-hadir.index') }}">
+                    <i class="bi bi-pen"></i> Daftar Hadir
                 </a>
             @endrole
 

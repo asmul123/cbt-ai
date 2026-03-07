@@ -93,6 +93,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     // Quick Login Proktor
     Route::get('quick-login', [Admin\QuickLoginController::class, 'index'])->name('quick-login.index');
     Route::post('quick-login/login/{user}', [Admin\QuickLoginController::class, 'loginAs'])->name('quick-login.loginAs');
+
+    // Cetak Berita Acara & Daftar Hadir
+    Route::get('cetak', [Admin\CetakController::class, 'index'])->name('cetak.index');
+    Route::get('cetak/berita-acara/{beritaAcara}', [Admin\CetakController::class, 'cetakBeritaAcara'])->name('cetak.beritaAcara');
+    Route::get('cetak/daftar-hadir/{beritaAcara}', [Admin\CetakController::class, 'cetakDaftarHadir'])->name('cetak.daftarHadir');
 });
 
 // Kembali dari impersonate proktor ke admin (di luar group admin karena role aktif = proktor)
@@ -134,6 +139,7 @@ Route::prefix('guru')->middleware(['auth', 'role:guru'])->name('guru.')->group(f
     Route::get('export/hasil/{ujian}/excel', [ExportController::class, 'excelHasil'])->name('export.excel');
     Route::get('export/hasil/{ujian}/pdf', [ExportController::class, 'pdfHasil'])->name('export.pdf');
     Route::get('export/berita-acara/{ujian}', [ExportController::class, 'pdfBeritaAcara'])->name('export.beritaAcara');
+    Route::get('export/daftar-hadir/{ujian}', [ExportController::class, 'pdfDaftarHadir'])->name('export.daftarHadir');
 });
 
 // ==================== PROKTOR ROUTES ====================
@@ -146,6 +152,15 @@ Route::prefix('proktor')->middleware(['auth', 'role:proktor'])->name('proktor.')
     Route::post('/monitor/{ujian}/hapus/{peserta}', [Proktor\MonitorController::class, 'hapusPeserta'])->name('monitor.hapus');
     Route::post('/monitor/{ujian}/reset/{peserta}', [Proktor\MonitorController::class, 'resetPeserta'])->name('monitor.reset');
     Route::post('/monitor/{ujian}/selesaikan/{peserta}', [Proktor\MonitorController::class, 'selesaikanPeserta'])->name('monitor.selesaikan');
+
+    // Berita Acara
+    Route::get('/berita-acara', [Proktor\BeritaAcaraController::class, 'index'])->name('berita-acara.index');
+    Route::get('/berita-acara/{ujian}', [Proktor\BeritaAcaraController::class, 'create'])->name('berita-acara.create');
+    Route::post('/berita-acara/{ujian}', [Proktor\BeritaAcaraController::class, 'store'])->name('berita-acara.store');
+
+    // Daftar Hadir (proktor: lihat & TTD pengawas saja, siswa TTD sendiri)
+    Route::get('/daftar-hadir/{ujian}', [Proktor\DaftarHadirController::class, 'show'])->name('daftar-hadir.show');
+    Route::post('/daftar-hadir/ttd-pengawas', [Proktor\DaftarHadirController::class, 'simpanTtdPengawas'])->name('daftar-hadir.ttdPengawas');
 });
 
 // ==================== SISWA ROUTES ====================
@@ -163,6 +178,10 @@ Route::prefix('siswa')->middleware(['auth', 'role:siswa'])->name('siswa.')->grou
     Route::get('/ujian/{ujian}/selesai', [Siswa\SiswaController::class, 'selesai'])->name('ujian.selesai');
     Route::get('/riwayat', [Siswa\SiswaController::class, 'riwayat'])->name('riwayat');
     Route::post('/log-aktivitas', [Siswa\SiswaController::class, 'logAktivitas'])->name('logAktivitas');
+
+    // Daftar Hadir - TTD Siswa
+    Route::get('/daftar-hadir', [Siswa\DaftarHadirController::class, 'index'])->name('daftar-hadir.index');
+    Route::post('/daftar-hadir/ttd', [Siswa\DaftarHadirController::class, 'simpanTtd'])->name('daftar-hadir.simpanTtd');
 });
 
 require __DIR__.'/auth.php';

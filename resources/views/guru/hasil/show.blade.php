@@ -10,7 +10,6 @@
         @endif
         <a href="{{ route('guru.export.excel', $ujian) }}" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel"></i> Export Excel</a>
         <a href="{{ route('guru.export.pdf', $ujian) }}" class="btn btn-danger btn-sm"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
-        <a href="{{ route('guru.export.beritaAcara', $ujian) }}" class="btn btn-info btn-sm"><i class="bi bi-file-text"></i> Berita Acara</a>
         <a href="{{ route('guru.hasil.index') }}" class="btn btn-secondary btn-sm">Kembali</a>
     </div>
 </div>

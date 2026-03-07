@@ -36,9 +36,9 @@ class ExportController extends Controller
         return $pdf->download('Hasil_' . str_replace(' ', '_', $ujian->nama_ujian) . '.pdf');
     }
 
-    public function pdfBeritaAcara(Ujian $ujian)
+    public function pdfBeritaAcara(Ujian $ujian, Request $request)
     {
-        $ujian->load(['mapel', 'guru', 'kelas', 'peserta.siswa']);
+        $ujian->load(['mapel', 'guru', 'kelas', 'ruang', 'peserta.siswa']);
         $ujian->loadCount('soal');
 
         $stats = [
@@ -46,12 +46,42 @@ class ExportController extends Controller
             'mengerjakan' => $ujian->peserta->where('status', 'mengerjakan')->count(),
             'selesai' => $ujian->peserta->where('status', 'selesai')->count(),
             'belum' => $ujian->peserta->where('status', 'belum_mulai')->count(),
-            'rata_rata' => \App\Models\HasilUjian::where('ujian_id', $ujian->id)->avg('nilai_akhir') ?? 0,
-            'tertinggi' => \App\Models\HasilUjian::where('ujian_id', $ujian->id)->max('nilai_akhir') ?? 0,
-            'terendah' => \App\Models\HasilUjian::where('ujian_id', $ujian->id)->min('nilai_akhir') ?? 0,
         ];
 
-        $pdf = Pdf::loadView('exports.berita-acara', compact('ujian', 'stats'));
+        $tahunAjaran = $this->getTahunAjaran($ujian);
+        $pengawas = $request->input('pengawas', '');
+        $catatan = $request->input('catatan') ?: 'Aman';
+
+        $pdf = Pdf::loadView('exports.berita-acara', compact('ujian', 'stats', 'tahunAjaran', 'pengawas', 'catatan'));
         return $pdf->download('Berita_Acara_' . str_replace(' ', '_', $ujian->nama_ujian) . '.pdf');
+    }
+
+    public function pdfDaftarHadir(Ujian $ujian, Request $request)
+    {
+        $ujian->load(['mapel', 'guru', 'kelas', 'ruang', 'peserta.siswa']);
+
+        $peserta = $ujian->peserta->sortBy(fn($p) => $p->siswa->nis ?? '');
+
+        $tahunAjaran = $this->getTahunAjaran($ujian);
+        $pengawas = $request->input('pengawas', '');
+
+        $pdf = Pdf::loadView('exports.daftar-hadir', compact('ujian', 'peserta', 'tahunAjaran', 'pengawas'));
+        return $pdf->download('Daftar_Hadir_' . str_replace(' ', '_', $ujian->nama_ujian) . '.pdf');
+    }
+
+    /**
+     * Hitung tahun ajaran berdasarkan tanggal ujian.
+     * Juli-Desember = tahun/tahun+1, Januari-Juni = tahun-1/tahun
+     */
+    private function getTahunAjaran(Ujian $ujian): string
+    {
+        $tgl = $ujian->tanggal_mulai ? \Carbon\Carbon::parse($ujian->tanggal_mulai) : now();
+        $tahun = $tgl->year;
+        $bulan = $tgl->month;
+
+        if ($bulan >= 7) {
+            return $tahun . '-' . ($tahun + 1);
+        }
+        return ($tahun - 1) . '-' . $tahun;
     }
 }
