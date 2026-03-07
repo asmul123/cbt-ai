@@ -17,6 +17,15 @@
         {{-- Kolom Kiri: Info & Form --}}
         <div class="col-lg-7">
             <div class="card mb-3">
+                <div class="card-header"><h6 class="mb-0"><i class="bi bi-person-badge"></i> Nama Pengawas</h6></div>
+                <div class="card-body">
+                    <input type="text" name="nama_pengawas" class="form-control"
+                           value="{{ old('nama_pengawas', $beritaAcara->nama_pengawas ?? '') }}"
+                           placeholder="Masukkan nama pengawas" required>
+                </div>
+            </div>
+
+            <div class="card mb-3">
                 <div class="card-header"><h6 class="mb-0"><i class="bi bi-clock"></i> Waktu Pelaksanaan</h6></div>
                 <div class="card-body">
                     <div class="row g-3">

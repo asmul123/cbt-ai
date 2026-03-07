@@ -43,7 +43,7 @@
             $waktuMulai = $beritaAcara->waktu_mulai ?? $tgl->format('H:i');
             $waktuSelesai = $beritaAcara->waktu_selesai ?? ($ujian->tanggal_selesai ? \Carbon\Carbon::parse($ujian->tanggal_selesai)->format('H:i') : $tgl->copy()->addMinutes($ujian->durasi)->format('H:i'));
             $catatan = $beritaAcara->catatan ?? 'Aman';
-            $pengawas = $beritaAcara->proktor->name ?? '';
+            $pengawas = $beritaAcara->nama_pengawas ?: ($beritaAcara->proktor->name ?? '');
             $ruangName = $beritaAcara->ruangUjian->nama ?? '-';
             $totalPeserta = $stats['total'] ?? 0;
             $hadirPeserta = $stats['hadir'] ?? 0;

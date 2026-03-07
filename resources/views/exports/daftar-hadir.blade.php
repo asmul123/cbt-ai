@@ -52,7 +52,7 @@
             $waktuMulai = $beritaAcara->waktu_mulai ?? $tgl->format('H:i');
             $waktuSelesai = $beritaAcara->waktu_selesai ?? $tgl->copy()->addMinutes($ujian->durasi)->format('H:i');
             $ruangName = $beritaAcara->ruangUjian->nama ?? '-';
-            $pengawas = $beritaAcara->proktor->name ?? '';
+            $pengawas = $beritaAcara->nama_pengawas ?: ($beritaAcara->proktor->name ?? '');
             $tidakHadirIds = $tidakHadirIds ?? ($beritaAcara->peserta_tidak_hadir ?? []);
         } else {
             $waktuMulai = $tgl->format('H:i');

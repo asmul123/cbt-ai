@@ -15,6 +15,7 @@ class BeritaAcara extends Model
         'ujian_id',
         'ruang_ujian_id',
         'proktor_id',
+        'nama_pengawas',
         'waktu_mulai',
         'waktu_selesai',
         'catatan',

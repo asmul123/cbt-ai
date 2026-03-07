@@ -70,6 +70,7 @@ class BeritaAcaraController extends Controller
         $ruangId = auth()->user()->ruang_ujian_id;
 
         $request->validate([
+            'nama_pengawas' => 'required|string|max:255',
             'waktu_mulai' => 'required|string|max:10',
             'waktu_selesai' => 'required|string|max:10',
             'catatan' => 'nullable|string|max:1000',
@@ -85,6 +86,7 @@ class BeritaAcaraController extends Controller
             ],
             [
                 'proktor_id' => auth()->id(),
+                'nama_pengawas' => $request->nama_pengawas,
                 'waktu_mulai' => $request->waktu_mulai,
                 'waktu_selesai' => $request->waktu_selesai,
                 'catatan' => $request->catatan ?: 'Aman',
