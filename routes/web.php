@@ -80,6 +80,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::post('ujian/{ujian}/soal', [Admin\UjianAdminController::class, 'soalSync'])->name('ujian.soalSync');
     Route::post('ujian/{ujian}/publish', [Admin\UjianAdminController::class, 'publish'])->name('ujian.publish');
     Route::post('ujian/{ujian}/generate-token', [Admin\UjianAdminController::class, 'generateToken'])->name('ujian.generateToken');
+    Route::post('ujian/{ujian}/sync-ruangan', [Admin\UjianAdminController::class, 'syncRuangan'])->name('ujian.syncRuangan');
     Route::patch('ujian/{ujian}/status', [Admin\UjianAdminController::class, 'updateStatus'])->name('ujian.updateStatus');
     Route::delete('ujian/{ujian}', [Admin\UjianAdminController::class, 'destroy'])->name('ujian.destroy');
 

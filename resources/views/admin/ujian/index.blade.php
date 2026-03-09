@@ -93,6 +93,14 @@
                                     <button class="btn btn-info btn-sm" title="Generate Token Baru"><i class="bi bi-key"></i></button>
                                 </form>
 
+                                {{-- Sync Ruangan: tersedia untuk publish & berlangsung --}}
+                                @if(in_array($u->status, ['publish', 'berlangsung']))
+                                    <form action="{{ route('admin.ujian.syncRuangan', $u) }}" method="POST" class="d-inline" onsubmit="return confirm('Sync ulang ruangan peserta? Peserta tanpa ruangan akan diperbarui dari data siswa.')">
+                                        @csrf
+                                        <button class="btn btn-outline-warning btn-sm" title="Sync Ruangan Peserta"><i class="bi bi-arrow-repeat"></i></button>
+                                    </form>
+                                @endif
+
                                 {{-- Mulai / Selesaikan --}}
                                 @if(in_array($u->status, ['publish', 'berlangsung']))
                                     <form action="{{ route('admin.ujian.updateStatus', $u) }}" method="POST" class="d-inline">

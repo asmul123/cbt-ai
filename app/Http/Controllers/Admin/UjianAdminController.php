@@ -208,6 +208,47 @@ class UjianAdminController extends Controller
         }
     }
 
+    /**
+     * Sync ulang ruangan peserta yang belum punya ruang / ruangnya berubah.
+     * Juga menambahkan peserta baru jika ada siswa yang belum terdaftar.
+     */
+    public function syncRuangan(Ujian $ujian)
+    {
+        $kelasIds = $ujian->kelas()->pluck('kelas.id')->toArray();
+        $siswaList = Siswa::whereIn('kelas_id', $kelasIds)->get();
+
+        $added = 0;
+        $synced = 0;
+
+        foreach ($siswaList as $siswa) {
+            $peserta = PesertaUjian::where('ujian_id', $ujian->id)
+                ->where('siswa_id', $siswa->id)
+                ->first();
+
+            if (!$peserta) {
+                // Siswa belum terdaftar sebagai peserta
+                PesertaUjian::create([
+                    'ujian_id' => $ujian->id,
+                    'siswa_id' => $siswa->id,
+                    'status' => 'belum_mulai',
+                    'ruang_ujian_id' => $siswa->ruang_ujian_id,
+                ]);
+                $added++;
+            } elseif (!$peserta->ruang_ujian_id && $siswa->ruang_ujian_id) {
+                // Peserta ada tapi belum punya ruang → sync dari data siswa
+                $peserta->update(['ruang_ujian_id' => $siswa->ruang_ujian_id]);
+                $synced++;
+            }
+        }
+
+        $msg = "Sync ruangan selesai. ";
+        if ($added > 0) $msg .= "{$added} peserta baru ditambahkan. ";
+        if ($synced > 0) $msg .= "{$synced} peserta diperbarui ruangannya. ";
+        if ($added === 0 && $synced === 0) $msg .= "Semua peserta sudah memiliki ruangan.";
+
+        return back()->with('success', trim($msg));
+    }
+
     public function generateToken(Ujian $ujian)
     {
         $ujian->update(['token_ujian' => Ujian::generateToken()]);
