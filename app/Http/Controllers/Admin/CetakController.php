@@ -51,7 +51,7 @@ class CetakController extends Controller
 
         $peserta = PesertaUjian::where('ujian_id', $ujian->id)
             ->where('ruang_ujian_id', $beritaAcara->ruang_ujian_id)
-            ->with('siswa')
+            ->with('siswa.kelas')
             ->get();
 
         $tidakHadirIds = $beritaAcara->peserta_tidak_hadir ?? [];
@@ -65,7 +65,10 @@ class CetakController extends Controller
 
         $tahunAjaran = $this->getTahunAjaran($ujian);
 
-        $pdf = Pdf::loadView('exports.berita-acara', compact('beritaAcara', 'ujian', 'stats', 'tahunAjaran', 'pesertaTidakHadir'));
+        // Ambil nama kelas hanya dari peserta di ruangan ini
+        $kelasNames = $peserta->pluck('siswa.kelas.nama')->unique()->filter()->sort()->values()->implode(', ') ?: '-';
+
+        $pdf = Pdf::loadView('exports.berita-acara', compact('beritaAcara', 'ujian', 'stats', 'tahunAjaran', 'pesertaTidakHadir', 'kelasNames'));
         return $pdf->download('Berita_Acara_' . str_replace(' ', '_', $ujian->nama_ujian) . '_' . str_replace(' ', '_', $beritaAcara->ruangUjian->nama) . '.pdf');
     }
 
@@ -90,7 +93,10 @@ class CetakController extends Controller
         $tidakHadirIds = $beritaAcara->peserta_tidak_hadir ?? [];
         $tahunAjaran = $this->getTahunAjaran($ujian);
 
-        $pdf = Pdf::loadView('exports.daftar-hadir', compact('beritaAcara', 'ujian', 'peserta', 'ttdMap', 'tidakHadirIds', 'tahunAjaran'));
+        // Ambil nama kelas hanya dari peserta di ruangan ini
+        $kelasNames = $peserta->pluck('siswa.kelas.nama')->unique()->filter()->sort()->values()->implode(', ') ?: '-';
+
+        $pdf = Pdf::loadView('exports.daftar-hadir', compact('beritaAcara', 'ujian', 'peserta', 'ttdMap', 'tidakHadirIds', 'tahunAjaran', 'kelasNames'));
         return $pdf->download('Daftar_Hadir_' . str_replace(' ', '_', $ujian->nama_ujian) . '_' . str_replace(' ', '_', $beritaAcara->ruangUjian->nama) . '.pdf');
     }
 

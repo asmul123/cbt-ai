@@ -8,7 +8,12 @@
         body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 0; padding: 0; line-height: 1.4; }
 
         /* KOP Surat */
-        .kop { text-align: center; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 20px; }
+        .kop { border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 20px; }
+        .kop table { width: 100%; }
+        .kop td { border: none; vertical-align: middle; }
+        .kop .logo-cell { width: 80px; text-align: center; }
+        .kop .logo-cell img { max-height: 75px; max-width: 75px; }
+        .kop .text-cell { text-align: center; }
         .kop .instansi { font-size: 11pt; font-weight: bold; margin: 0; }
         .kop .sekolah { font-size: 16pt; font-weight: bold; margin: 2px 0; }
         .kop .alamat { font-size: 9pt; margin: 0; }
@@ -45,6 +50,8 @@
 </head>
 <body>
     @php
+        \Carbon\Carbon::setLocale('id');
+
         $hasBA = isset($beritaAcara);
         $tgl = $ujian->tanggal_mulai ? \Carbon\Carbon::parse($ujian->tanggal_mulai) : now();
 
@@ -61,16 +68,30 @@
             $pengawas = $pengawas ?? '';
             $tidakHadirIds = [];
         }
-        $kelasNames = $ujian->kelas->pluck('nama')->implode(', ') ?: '-';
+        // Gunakan kelasNames dari controller (hanya kelas di ruangan ini)
+        $kelasNames = $kelasNames ?? ($ujian->kelas->pluck('nama')->implode(', ') ?: '-');
+
+        $logoPath = public_path('logo_jabar.png');
     @endphp
 
     {{-- KOP SURAT --}}
     <div class="kop">
-        <p class="instansi">{{ config('app.sekolah.instansi') }}<br>{{ config('app.sekolah.dinas') }}</p>
-        <p class="sekolah">{{ config('app.sekolah.nama') }}</p>
-        <p class="alamat">{{ config('app.sekolah.alamat') }} Telp {{ config('app.sekolah.telp') }} Fax: {{ config('app.sekolah.fax') }}</p>
-        <p class="kontak">Website : {{ config('app.sekolah.website') }} Email : {{ config('app.sekolah.email') }}</p>
-        <p class="alamat">{{ config('app.sekolah.kecamatan') }} - {{ config('app.sekolah.kota') }} {{ config('app.sekolah.kodepos') }}</p>
+        <table>
+            <tr>
+                <td class="logo-cell">
+                    @if(file_exists($logoPath))
+                        <img src="{{ $logoPath }}" alt="Logo">
+                    @endif
+                </td>
+                <td class="text-cell">
+                    <p class="instansi">{{ config('app.sekolah.instansi') }}<br>{{ config('app.sekolah.dinas') }}</p>
+                    <p class="sekolah">{{ config('app.sekolah.nama') }}</p>
+                    <p class="alamat">{{ config('app.sekolah.alamat') }} Telp {{ config('app.sekolah.telp') }} Fax: {{ config('app.sekolah.fax') }}</p>
+                    <p class="kontak">Website : {{ config('app.sekolah.website') }} Email : {{ config('app.sekolah.email') }}</p>
+                    <p class="alamat">{{ config('app.sekolah.kecamatan') }} - {{ config('app.sekolah.kota') }} {{ config('app.sekolah.kodepos') }}</p>
+                </td>
+            </tr>
+        </table>
     </div>
 
     {{-- JUDUL --}}
