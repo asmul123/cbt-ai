@@ -201,6 +201,53 @@ class MonitorController extends Controller
     }
 
     /**
+     * Reset massal peserta berdasarkan filter ruang
+     */
+    public function resetMassal(Request $request, Ujian $ujian)
+    {
+        $ruangFilter = $request->get('ruang');
+
+        $query = PesertaUjian::where('ujian_id', $ujian->id)
+            ->whereIn('status', ['mengerjakan', 'selesai']);
+
+        if ($ruangFilter) {
+            if ($ruangFilter === 'none') {
+                $query->whereNull('ruang_ujian_id');
+            } else {
+                $query->where('ruang_ujian_id', $ruangFilter);
+            }
+        }
+
+        $pesertaList = $query->with('siswa.user')->get();
+
+        if ($pesertaList->isEmpty()) {
+            return back()->with('error', 'Tidak ada peserta yang bisa direset.');
+        }
+
+        DB::transaction(function () use ($pesertaList, $ujian) {
+            foreach ($pesertaList as $peserta) {
+                $peserta->hasilUjian()?->delete();
+
+                $peserta->update([
+                    'status' => 'mengerjakan',
+                    'waktu_mulai' => now(),
+                    'waktu_selesai' => null,
+                    'jumlah_pelanggaran' => 0,
+                ]);
+            }
+
+            LogAktivitas::log(
+                auth()->id(),
+                'reset_massal',
+                $ujian->id,
+                'Admin mereset massal ' . $pesertaList->count() . ' peserta'
+            );
+        });
+
+        return back()->with('success', $pesertaList->count() . ' peserta berhasil direset.');
+    }
+
+    /**
      * Paksa selesaikan ujian siswa
      */
     public function selesaikanPeserta(Ujian $ujian, PesertaUjian $peserta)

@@ -4,6 +4,13 @@
 @section('content')
 <h5 class="mb-3"><i class="bi bi-printer"></i> Cetak Berita Acara & Daftar Hadir</h5>
 
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div></div>
+    <a href="{{ route('admin.cetak.rekapTidakHadir') }}" class="btn btn-warning btn-sm">
+        <i class="bi bi-person-x"></i> Rekap Tidak Hadir Per Mapel
+    </a>
+</div>
+
 {{-- Pilih Ujian --}}
 <div class="card mb-3">
     <div class="card-body py-2">

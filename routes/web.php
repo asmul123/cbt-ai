@@ -68,6 +68,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::post('monitor/{ujian}/buka/{peserta}', [Admin\MonitorController::class, 'bukaPeserta'])->name('monitor.buka');
     Route::post('monitor/{ujian}/hapus/{peserta}', [Admin\MonitorController::class, 'hapusPeserta'])->name('monitor.hapus');
     Route::post('monitor/{ujian}/reset/{peserta}', [Admin\MonitorController::class, 'resetPeserta'])->name('monitor.reset');
+    Route::post('monitor/{ujian}/reset-massal', [Admin\MonitorController::class, 'resetMassal'])->name('monitor.resetMassal');
     Route::post('monitor/{ujian}/selesaikan/{peserta}', [Admin\MonitorController::class, 'selesaikanPeserta'])->name('monitor.selesaikan');
 
     // Ujian management (CRUD + soal + publish)
@@ -97,6 +98,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 
     // Cetak Berita Acara & Daftar Hadir
     Route::get('cetak', [Admin\CetakController::class, 'index'])->name('cetak.index');
+    Route::get('cetak/rekap-tidak-hadir', [Admin\CetakController::class, 'rekapTidakHadir'])->name('cetak.rekapTidakHadir');
+    Route::get('cetak/rekap-tidak-hadir/pdf', [Admin\CetakController::class, 'cetakRekapTidakHadir'])->name('cetak.cetakRekapTidakHadir');
     Route::get('cetak/berita-acara/{beritaAcara}', [Admin\CetakController::class, 'cetakBeritaAcara'])->name('cetak.beritaAcara');
     Route::get('cetak/daftar-hadir/{beritaAcara}', [Admin\CetakController::class, 'cetakDaftarHadir'])->name('cetak.daftarHadir');
 });

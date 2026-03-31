@@ -53,6 +53,29 @@
     </div>
 </div>
 
+<!-- Aksi Massal -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="fw-semibold me-2"><i class="bi bi-arrow-repeat"></i> Aksi Massal:</span>
+            <form action="{{ route('admin.monitor.resetMassal', $ujian) }}{{ $ruangFilter ? '?ruang=' . $ruangFilter : '' }}" method="POST"
+                  onsubmit="return confirm('Reset SEMUA peserta{{ $currentRuang ? ' di ruang ' . $currentRuang->nama : ($ruangFilter === 'none' ? ' tanpa ruang' : '') }}? Peserta yang sedang mengerjakan atau sudah selesai akan direset.')">
+                @csrf
+                <button type="submit" class="btn btn-warning btn-sm">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset Massal
+                    @if($currentRuang)
+                        (Ruang: {{ $currentRuang->nama }})
+                    @elseif($ruangFilter === 'none')
+                        (Tanpa Ruang)
+                    @else
+                        (Semua Ruangan)
+                    @endif
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Stats -->
 <div class="row g-3 mb-4" id="statsArea">
     <div class="col-md-3">

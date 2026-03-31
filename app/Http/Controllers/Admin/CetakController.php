@@ -100,6 +100,88 @@ class CetakController extends Controller
         return $pdf->download('Daftar_Hadir_' . str_replace(' ', '_', $ujian->nama_ujian) . '_' . str_replace(' ', '_', $beritaAcara->ruangUjian->nama) . '.pdf');
     }
 
+    /**
+     * Halaman rekapitulasi siswa tidak hadir per mata pelajaran
+     */
+    public function rekapTidakHadir()
+    {
+        $ujianList = Ujian::whereIn('status', ['publish', 'berlangsung', 'selesai'])
+            ->with('mapel')
+            ->latest()
+            ->get();
+
+        // Ambil semua berita acara untuk ujian-ujian ini
+        $beritaAcaras = BeritaAcara::whereIn('ujian_id', $ujianList->pluck('id'))
+            ->with(['ujian.mapel', 'ruangUjian'])
+            ->get();
+
+        // Kumpulkan semua peserta_ujian_id yang tidak hadir
+        $tidakHadirIds = [];
+        foreach ($beritaAcaras as $ba) {
+            foreach ($ba->peserta_tidak_hadir ?? [] as $pesertaId) {
+                $tidakHadirIds[$pesertaId] = $ba->ujian_id;
+            }
+        }
+
+        // Ambil data peserta yang tidak hadir
+        $pesertaTidakHadir = PesertaUjian::whereIn('id', array_keys($tidakHadirIds))
+            ->with(['siswa.kelas', 'ujian.mapel', 'ruangUjian'])
+            ->get();
+
+        // Group by mapel
+        $rekapPerMapel = $pesertaTidakHadir->groupBy(fn($p) => $p->ujian->mapel->nama ?? 'Tanpa Mapel')
+            ->sortKeys()
+            ->map(function ($pesertaGroup) {
+                return $pesertaGroup->groupBy(fn($p) => $p->ujian->nama_ujian ?? '-')
+                    ->map(function ($perUjian) {
+                        return $perUjian->sortBy(fn($p) => $p->siswa->nis ?? '');
+                    });
+            });
+
+        return view('admin.cetak.rekap-tidak-hadir', compact('rekapPerMapel', 'ujianList'));
+    }
+
+    /**
+     * Cetak PDF rekapitulasi tidak hadir
+     */
+    public function cetakRekapTidakHadir()
+    {
+        $ujianList = Ujian::whereIn('status', ['publish', 'berlangsung', 'selesai'])
+            ->with('mapel')
+            ->latest()
+            ->get();
+
+        $beritaAcaras = BeritaAcara::whereIn('ujian_id', $ujianList->pluck('id'))
+            ->with(['ujian.mapel', 'ruangUjian'])
+            ->get();
+
+        $tidakHadirIds = [];
+        foreach ($beritaAcaras as $ba) {
+            foreach ($ba->peserta_tidak_hadir ?? [] as $pesertaId) {
+                $tidakHadirIds[$pesertaId] = $ba->ujian_id;
+            }
+        }
+
+        $pesertaTidakHadir = PesertaUjian::whereIn('id', array_keys($tidakHadirIds))
+            ->with(['siswa.kelas', 'ujian.mapel', 'ruangUjian'])
+            ->get();
+
+        $rekapPerMapel = $pesertaTidakHadir->groupBy(fn($p) => $p->ujian->mapel->nama ?? 'Tanpa Mapel')
+            ->sortKeys()
+            ->map(function ($pesertaGroup) {
+                return $pesertaGroup->groupBy(fn($p) => $p->ujian->nama_ujian ?? '-')
+                    ->map(function ($perUjian) {
+                        return $perUjian->sortBy(fn($p) => $p->siswa->nis ?? '');
+                    });
+            });
+
+        $tahunAjaran = $ujianList->first() ? $this->getTahunAjaran($ujianList->first()) : (date('Y') . '-' . (date('Y') + 1));
+
+        $pdf = Pdf::loadView('exports.rekap-tidak-hadir', compact('rekapPerMapel', 'tahunAjaran'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->download('Rekap_Tidak_Hadir_Per_Mapel.pdf');
+    }
+
     private function getTahunAjaran(Ujian $ujian): string
     {
         $tgl = $ujian->tanggal_mulai ? \Carbon\Carbon::parse($ujian->tanggal_mulai) : now();

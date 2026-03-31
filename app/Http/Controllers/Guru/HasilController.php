@@ -35,12 +35,19 @@ class HasilController extends Controller
         return view('guru.hasil.index', compact('ujian'));
     }
 
-    public function show(Ujian $ujian)
+    public function show(Request $request, Ujian $ujian)
     {
-        $hasil = HasilUjian::where('ujian_id', $ujian->id)
+        $query = HasilUjian::where('ujian_id', $ujian->id)
             ->with(['siswa.kelas', 'siswa.jurusan'])
-            ->orderByDesc('nilai_akhir')
-            ->get();
+            ->orderByDesc('nilai_akhir');
+
+        if ($request->filled('kelas_id')) {
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('kelas_id', $request->kelas_id);
+            });
+        }
+
+        $hasil = $query->get();
 
         $kelasIds = $ujian->kelas()->pluck('kelas.id');
         $kelas = Kelas::whereIn('id', $kelasIds)->get();
